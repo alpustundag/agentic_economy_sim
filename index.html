@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Economy Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        :root{--bg:#09090b;--card:#131318;--border:#27272a;--cyan:#06b6d4;--green:#10b981;--rose:#f43f5e;--amber:#f59e0b;--violet:#8b5cf6;--text:#fafafa;--muted:#71717a}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.4}
+        .container{max-width:1400px;margin:0 auto;padding:12px}
+        header{text-align:center;padding:15px 0;border-bottom:1px solid var(--border);margin-bottom:15px}
+        h1{font-size:1.6rem;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .subtitle{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+        .version-badge{display:inline-block;background:var(--violet);color:white;font-size:.5rem;padding:2px 6px;border-radius:3px;margin-left:8px;vertical-align:middle}
+        .controls{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
+        .ctrl{display:flex;flex-direction:column;gap:3px}
+        .ctrl label{font-size:.6rem;color:var(--muted);text-transform:uppercase}
+        .ctrl select{background:#1a1a1f;border:1px solid var(--border);border-radius:4px;padding:6px 8px;color:var(--text);font-size:.75rem}
+        .ctrl input[type=range]{-webkit-appearance:none;background:#1a1a1f;height:4px;border-radius:3px}
+        .ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--cyan);border-radius:50%;cursor:pointer}
+        .range-row{display:flex;align-items:center;gap:6px}
+        .range-val{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--cyan);min-width:40px;text-align:right}
+        .btns{display:flex;gap:5px}
+        .btn{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:7px 12px;border:none;border-radius:4px;cursor:pointer}
+        .btn-p{background:var(--cyan);color:var(--bg)}
+        .btn-s{background:transparent;border:1px solid var(--border);color:var(--muted)}
+        .year-box{text-align:center;padding:12px 0}
+        .year{font-size:3.5rem;font-weight:700;background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+        .year-lbl{font-size:.6rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+        .stat{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;border-left:2px solid var(--border)}
+        .stat.pos{border-left-color:var(--green)}.stat.neg{border-left-color:var(--rose)}.stat.neu{border-left-color:var(--amber)}.stat.hi{border-left-color:var(--cyan)}.stat.warn{border-left-color:var(--violet)}
+        .stat-lbl{font-size:.55rem;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+        .stat-val{font-size:1.1rem;font-weight:700}
+        .stat-val.g{color:var(--green)}.stat-val.r{color:var(--rose)}.stat-val.y{color:var(--amber)}.stat-val.c{color:var(--cyan)}.stat-val.v{color:var(--violet)}
+        .stat-sub{font-size:.5rem;color:var(--muted)}
+        .new-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:12px}
+        .metric-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px}
+        .metric-card h5{font-size:.6rem;color:var(--muted);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+        .metric-card h5 .icon{font-size:.9rem}
+        .metric-main{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+        .metric-main .val{font-size:1.3rem;font-weight:700}
+        .metric-main .unit{font-size:.65rem;color:var(--muted)}
+        .metric-bar{height:6px;background:#1a1a1f;border-radius:3px;overflow:hidden;margin-bottom:4px}
+        .metric-fill{height:100%;border-radius:3px;transition:width .3s}
+        .metric-detail{font-size:.55rem;color:var(--muted)}
+        .metric-detail span{color:var(--text)}
+        
+        /* Ownership Metrics */
+        .ownership-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+        @media(max-width:900px){.ownership-metrics{grid-template-columns:1fr}}
+        .own-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px}
+        .own-card h5{font-size:.65rem;color:var(--muted);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+        .own-card h5 .icon{font-size:1rem}
+        .own-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+        @media(max-width:600px){.own-grid{grid-template-columns:repeat(2,1fr)}}
+        .own-item{background:#1a1a1f;border-radius:6px;padding:10px;text-align:center}
+        .own-label{font-size:.55rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+        .own-val{font-size:1.1rem;font-weight:700;color:var(--cyan);margin-bottom:2px}
+        .own-desc{font-size:.5rem;color:var(--muted);line-height:1.3}
+        
+        .charts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+        @media(max-width:800px){.charts{grid-template-columns:1fr}}
+        .chart-box{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px}
+        .chart-title{font-size:.7rem;color:var(--muted);margin-bottom:6px}
+        .chart-wrap{height:160px}
+        .chart-wrap.tall{height:220px}
+        .sectors{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:12px;overflow-x:auto}
+        .sec-title{font-size:.75rem;font-weight:600;margin-bottom:8px}
+        table{width:100%;border-collapse:collapse;font-size:.7rem}
+        th{font-size:.55rem;color:var(--muted);text-transform:uppercase;text-align:left;padding:6px 4px;border-bottom:1px solid var(--border)}
+        td{padding:8px 4px;border-bottom:1px solid var(--border)}
+        .prog{width:60px;height:4px;background:#1a1a1f;border-radius:2px;display:inline-block;margin-right:4px}
+        .prog-fill{height:100%;background:var(--cyan);border-radius:2px}
+        .events{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:20px;max-height:140px;overflow-y:auto}
+        .event{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.7rem}
+        .event-yr{font-family:'JetBrains Mono',monospace;color:var(--cyan);min-width:30px}
+        .event-txt{color:var(--muted)}
+        .event-txt.pos{color:var(--green)}.event-txt.neg{color:var(--rose)}.event-txt.neu{color:var(--amber)}.event-txt.warn{color:var(--violet)}
+        .method{border-top:1px solid var(--border);padding-top:25px;margin-top:10px}
+        .method h2{font-size:1rem;text-align:center;margin-bottom:20px;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .method-intro{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-bottom:20px}
+        .method-intro h3{font-size:.85rem;color:var(--cyan);margin-bottom:12px}
+        .method-intro p{font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
+        .flow-diagram{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:15px;background:#1a1a1f;border-radius:6px;margin:15px 0}
+        .flow-box{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:8px 12px;font-size:.7rem;text-align:center}
+        .flow-box.input{border-color:var(--cyan);color:var(--cyan)}
+        .flow-box.process{border-color:var(--violet);color:var(--violet)}
+        .flow-box.output{border-color:var(--green);color:var(--green)}
+        .flow-box.new{border-color:var(--amber);color:var(--amber);background:#1a1a1f}
+        .flow-arrow{color:var(--muted);font-size:1.2rem}
+        .v3-features{background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(6,182,212,.1));border:1px solid var(--violet);border-radius:8px;padding:15px;margin:15px 0}
+        .v3-features h4{font-size:.8rem;color:var(--violet);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+        .v3-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+        .v3-item{background:var(--card);border-radius:6px;padding:10px}
+        .v3-item .title{font-size:.7rem;font-weight:600;color:var(--text);margin-bottom:4px}
+        .v3-item .desc{font-size:.65rem;color:var(--muted);line-height:1.4}
+        .v3-item code{background:var(--bg);color:var(--cyan);padding:1px 4px;border-radius:2px;font-size:.6rem}
+        .scenario-descriptions{margin-top:20px;padding-top:15px;border-top:1px solid var(--border)}
+        .scenario-descriptions h4{font-size:.8rem;color:var(--text);margin-bottom:12px;text-align:center}
+        .scenario-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+        .scenario-card{background:#1a1a1f;border-radius:8px;padding:14px;border-left:3px solid var(--border)}
+        .scenario-card.baseline{border-left-color:var(--muted)}
+        .scenario-card.accelerated{border-left-color:var(--rose)}
+        .scenario-card.managed{border-left-color:var(--green)}
+        .scenario-card.resistance{border-left-color:var(--amber)}
+        .scenario-card.cooperative{border-left-color:var(--cyan);background:linear-gradient(135deg,#1a1a1f 0%,#1a2a2a 100%)}
+        .scenario-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+        .scenario-icon{font-size:1.1rem}
+        .scenario-name{font-weight:600;font-size:.8rem;flex:1}
+        .scenario-badge{font-family:'JetBrains Mono',monospace;font-size:.65rem;background:var(--bg);padding:3px 8px;border-radius:4px;color:var(--cyan)}
+        .scenario-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
+        .scenario-params{display:flex;flex-wrap:wrap;gap:6px}
+        .scenario-params span{font-size:.6rem;background:var(--bg);padding:3px 6px;border-radius:3px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+        .critique-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
+        .critique-section h4{font-size:.8rem;color:var(--amber);margin-bottom:12px}
+        .critique-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+        .critique-item{background:#1a1a1f;border-radius:6px;padding:12px;border-left:3px solid var(--amber)}
+        .critique-item.resolved{border-left-color:var(--green)}
+        .critique-item .issue{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+        .critique-item .issue .badge{font-size:.5rem;padding:2px 5px;border-radius:3px}
+        .critique-item .issue .badge.fixed{background:var(--green);color:white}
+        .critique-item .issue .badge.partial{background:var(--amber);color:white}
+        .critique-item .problem{font-size:.65rem;color:var(--rose);margin-bottom:4px}
+        .critique-item .solution{font-size:.65rem;color:var(--green)}
+        .eq-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
+        .eq-section h4{font-size:.8rem;color:var(--cyan);margin-bottom:12px}
+        .eq-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}
+        @media(max-width:700px){.eq-row{grid-template-columns:1fr}}
+        .eq-item{background:#1a1a1f;border-radius:6px;padding:12px}
+        .eq-item.new{border:1px solid var(--violet)}
+        .eq-name{font-size:.7rem;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+        .eq-name .new-badge{background:var(--violet);color:white;font-size:.5rem;padding:1px 4px;border-radius:2px}
+        .eq-formula{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:8px;background:var(--bg);border-radius:4px;text-align:center;margin-bottom:8px}
+        .eq-formula sub{font-size:.7em;color:var(--cyan)}
+        .eq-params{font-size:.65rem;color:var(--muted);line-height:1.5}
+        .eq-params code{color:var(--cyan);background:var(--bg);padding:1px 4px;border-radius:2px}
+        .param-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
+        .param-section h4{font-size:.8rem;color:var(--cyan);margin-bottom:12px}
+        .param-table{width:100%;border-collapse:collapse;font-size:.7rem}
+        .param-table th{background:#1a1a1f;padding:8px;text-align:left;font-weight:500;color:var(--muted);font-size:.65rem;text-transform:uppercase}
+        .param-table td{padding:8px;border-bottom:1px solid var(--border)}
+        .param-table code{color:var(--cyan);font-family:'JetBrains Mono',monospace}
+        .ref-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
+        .ref-section h4{font-size:.8rem;color:var(--cyan);margin-bottom:12px}
+        .ref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+        .ref-item{background:#1a1a1f;border-radius:4px;padding:10px;font-size:.7rem}
+        .ref-item .concept{color:var(--amber);font-weight:500;margin-bottom:4px}
+        .ref-item .source{color:var(--muted)}
+        .glossary-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px;margin-top:20px}
+        .glossary-section h4{font-size:.9rem;color:var(--cyan);margin-bottom:15px;text-align:center}
+        .glossary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+        .gloss-item{background:#1a1a1f;border-radius:8px;padding:12px;border-left:3px solid var(--violet)}
+        .gloss-term{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:6px}
+        .gloss-def{font-size:.65rem;color:var(--muted);line-height:1.5;margin-bottom:8px}
+        .gloss-def code{background:var(--bg);color:var(--cyan);padding:1px 4px;border-radius:2px;font-size:.6rem}
+        .gloss-def strong{color:var(--text)}
+        .gloss-thresholds,.gloss-effects{display:flex;flex-wrap:wrap;gap:5px}
+        .thresh,.eff-item{font-size:.55rem;padding:3px 6px;border-radius:3px;background:var(--bg)}
+        .thresh.green,.eff-item.pos{color:var(--green);border:1px solid rgba(16,185,129,.3)}
+        .thresh.amber{color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+        .thresh.rose{color:var(--rose);border:1px solid rgba(244,63,94,.3)}
+        .thresh.cyan{color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
+        .thresh.violet{color:var(--violet);border:1px solid rgba(139,92,246,.3)}
+        .gloss-formula{background:var(--bg);border-radius:4px;padding:6px;margin-top:6px}
+        .gloss-formula code{font-size:.6rem;color:var(--cyan);display:block;text-align:center}
+        footer{text-align:center;padding:15px;border-top:1px solid var(--border);font-size:.6rem;color:var(--muted)}
+        ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}.running .year{animation:pulse 1s infinite}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Agentic Economy Simulator</h1>
+        <p class="subtitle">AI-Driven Economic Transformation • 2026-2042</p>
+    </header>
+    <div class="controls">
+        <div class="ctrl"><label>Scenario</label><select id="scenario"><option value="baseline">Baseline</option><option value="accelerated">Accelerated</option><option value="managed">Managed</option><option value="resistance">Resistance</option><option value="cooperative">Cooperative</option></select></div>
+        <div class="ctrl"><label>Automation Speed</label><div class="range-row"><input type="range" id="autoSpeed" min="1" max="10" value="5"><span class="range-val" id="autoSpeedVal">5x</span></div></div>
+        <div class="ctrl"><label>UBI ($/yr)</label><div class="range-row"><input type="range" id="ubi" min="0" max="36000" step="3000" value="0"><span class="range-val" id="ubiVal">$0</span></div></div>
+        <div class="ctrl"><label>Reskilling %</label><div class="range-row"><input type="range" id="reskill" min="0" max="5" step="0.5" value="0.5"><span class="range-val" id="reskillVal">0.5%</span></div></div>
+        <div class="ctrl"><label>Worker Ownership</label><div class="range-row"><input type="range" id="workerOwn" min="0" max="50" step="5" value="5"><span class="range-val" id="workerOwnVal">5%</span></div></div>
+        <div class="ctrl"><label>Robot Tax</label><div class="range-row"><input type="range" id="robotTax" min="0" max="30" step="5" value="0"><span class="range-val" id="robotTaxVal">0%</span></div></div>
+        <div class="ctrl"><label>Unemp Cap</label><select id="unempCap"><option value="25">25%</option><option value="35">35%</option><option value="50">50%</option></select></div>
+        <div class="ctrl"><label>Speed</label><select id="speed"><option value="1000">1s/yr</option><option value="500">0.5s</option><option value="200">0.2s</option></select></div>
+        <div class="ctrl btns"><button class="btn btn-p" id="startBtn">▶ Start</button><button class="btn btn-s" id="pauseBtn">⏸</button><button class="btn btn-s" id="resetBtn">↺</button></div>
+    </div>
+    <div class="year-box"><div class="year" id="year">2026</div><div class="year-lbl">Simulation Year</div></div>
+    
+    <!-- Capital Ownership Metrics - NEW -->
+    <div class="ownership-metrics">
+        <div class="own-card">
+            <h5><span class="icon">🏛️</span> Capital Ownership Model</h5>
+            <div class="own-grid">
+                <div class="own-item">
+                    <div class="own-label">Worker Ownership</div>
+                    <div class="own-val" id="ownershipRate">5%</div>
+                    <div class="own-desc">Share of AI capital owned by workers/public</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Capital Gains (Annual)</div>
+                    <div class="own-val" id="capitalGains">$0.0T</div>
+                    <div class="own-desc">Total automation profits generated</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Dividend Income</div>
+                    <div class="own-val" id="dividendIncome">$0/yr</div>
+                    <div class="own-desc">Per capita income from capital ownership</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Autonomous Solvency</div>
+                    <div class="own-val" id="autoSolvency">0%</div>
+                    <div class="own-desc">% who can survive without wages (passive income)</div>
+                </div>
+            </div>
+        </div>
+        <div class="own-card">
+            <h5><span class="icon">🌍</span> Global Competition</h5>
+            <div class="own-grid">
+                <div class="own-item">
+                    <div class="own-label">World Avg Automation</div>
+                    <div class="own-val" id="worldAuto">20%</div>
+                    <div class="own-desc">Global baseline (grows 3%/year)</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Competitiveness Gap</div>
+                    <div class="own-val" id="compGap">-2%</div>
+                    <div class="own-desc">Your automation vs world average</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Export Penalty</div>
+                    <div class="own-val" id="exportPenalty">0%</div>
+                    <div class="own-desc">GDP drag from falling behind</div>
+                </div>
+                <div class="own-item">
+                    <div class="own-label">Robot Tax Revenue</div>
+                    <div class="own-val" id="robotTaxRev">$0.0T</div>
+                    <div class="own-desc">Automation tax → social fund</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Demand-Side Metrics -->
+    <div class="new-metrics">
+        <div class="metric-card">
+            <h5><span class="icon">🛒</span> Aggregate Demand</h5>
+            <div class="metric-main"><span class="val" id="demand" style="color:var(--cyan)">100</span><span class="unit">index</span></div>
+            <div class="metric-bar"><div class="metric-fill" id="demandFill" style="width:100%;background:var(--cyan)"></div></div>
+            <div class="metric-detail">Wages + UBI relative to production capacity</div>
+        </div>
+        <div class="metric-card">
+            <h5><span class="icon">💸</span> Fiscal Pressure</h5>
+            <div class="metric-main"><span class="val" id="fiscal" style="color:var(--green)">0%</span><span class="unit">of GDP</span></div>
+            <div class="metric-bar"><div class="metric-fill" id="fiscalFill" style="width:0%;background:var(--green)"></div></div>
+            <div class="metric-detail">UBI cost: <span id="ubiCost">$0T</span> | Tax drag: <span id="taxDrag">0%</span></div>
+        </div>
+        <div class="metric-card">
+            <h5><span class="icon">⚖️</span> Demand-Supply Gap</h5>
+            <div class="metric-main"><span class="val" id="dsGap" style="color:var(--green)">0%</span><span class="unit">gap</span></div>
+            <div class="metric-bar"><div class="metric-fill" id="dsGapFill" style="width:50%;background:var(--green)"></div></div>
+            <div class="metric-detail">Negative = demand shortage (Henry Ford Paradox)</div>
+        </div>
+        <div class="metric-card">
+            <h5><span class="icon">📉</span> Deflation Index</h5>
+            <div class="metric-main"><span class="val" id="deflation" style="color:var(--amber)">1.00</span><span class="unit">price level</span></div>
+            <div class="metric-bar"><div class="metric-fill" id="deflationFill" style="width:50%;background:var(--amber)"></div></div>
+            <div class="metric-detail">Tech deflation boosts real purchasing power</div>
+        </div>
+    </div>
+    
+    <div class="stats" id="stats"></div>
+    <div class="charts">
+        <div class="chart-box"><div class="chart-title">GDP & Effective Demand</div><div class="chart-wrap"><canvas id="gdpChart"></canvas></div></div>
+        <div class="chart-box"><div class="chart-title">Unemployment Rate (%)</div><div class="chart-wrap"><canvas id="unempChart"></canvas></div></div>
+        <div class="chart-box"><div class="chart-title">Gini, Stress & Fiscal Pressure</div><div class="chart-wrap"><canvas id="giniChart"></canvas></div></div>
+        <div class="chart-box"><div class="chart-title">Sector Automation Levels</div><div class="chart-wrap tall"><canvas id="secChart"></canvas></div></div>
+    </div>
+    <div class="sectors"><div class="sec-title">Sector Analysis</div><table><thead><tr><th>Sector</th><th>Automation</th><th>Jobs (M)</th><th>Productivity</th><th>New Jobs</th><th>Displaced</th><th>Net</th></tr></thead><tbody id="secBody"></tbody></table></div>
+    <div class="events"><div class="sec-title">Event Log</div><div id="eventLog"></div></div>
+
+    <!-- Enhanced Methodology Section -->
+    <div class="method">
+        <h2>Model Methodology & Documentation (v3.0)</h2>
+        
+        <div class="method-intro">
+            <h3>How the Simulation Works</h3>
+            <p>This simulator models the economic transformation driven by AI agents and automation technologies from 2024 to 2040. <strong>Version 3.0</strong> introduces demand-side dynamics, fiscal constraints, and technological deflation based on critical feedback.</p>
+            <div class="flow-diagram">
+                <div class="flow-box input">User Inputs<br><small>Scenario, Speed, UBI, Reskilling</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box process">Sector Dynamics<br><small>8 industries</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box new">Demand Engine<br><small>NEW: Consumption</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box new">Fiscal Model<br><small>NEW: UBI funding</small></div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-box output">Outputs<br><small>GDP, Employment</small></div>
+            </div>
+            
+            <div class="v3-features">
+                <h4>🆕 New in Version 3.0</h4>
+                <div class="v3-grid">
+                    <div class="v3-item">
+                        <div class="title">🛒 Demand-Side Dynamics</div>
+                        <div class="desc">GDP growth now constrained by aggregate demand. High unemployment reduces consumption, creating "Henry Ford Paradox" where robots produce but no one can buy. Formula: <code>DemandGap = (Wages+UBI)/ProductionCapacity</code></div>
+                    </div>
+                    <div class="v3-item">
+                        <div class="title">💸 UBI Fiscal Reality</div>
+                        <div class="desc">UBI now has real cost calculated as % of GDP. High UBI creates tax burden that slows investment and automation. Creates balancing feedback loop previously missing.</div>
+                    </div>
+                    <div class="v3-item">
+                        <div class="title">📉 Technological Deflation</div>
+                        <div class="desc">Automation reduces prices (deflationary pressure). Lower prices increase real purchasing power even with lower nominal wages. Price index tracks this effect.</div>
+                    </div>
+                    <div class="v3-item">
+                        <div class="title">🎚️ Adjustable Unemployment Cap</div>
+                        <div class="desc">Can now model extreme scenarios (25%/35%/50% caps). Previous 25% hard limit prevented seeing worst-case "Doomsday" scenarios.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Descriptions -->
+            <div class="scenario-descriptions">
+                <h4>📋 Available Scenarios</h4>
+                <div class="scenario-grid">
+                    <div class="scenario-card baseline">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">⚖️</span>
+                            <span class="scenario-name">Baseline</span>
+                            <span class="scenario-badge">α = 8%</span>
+                        </div>
+                        <div class="scenario-desc">Current trajectory with moderate automation growth. Represents continuation of present trends without major policy interventions or technological breakthroughs.</div>
+                        <div class="scenario-params">
+                            <span>Agent: 12%</span><span>Reskill Eff: 15%</span><span>Friction: 20%</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card accelerated">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">🚀</span>
+                            <span class="scenario-name">Accelerated</span>
+                            <span class="scenario-badge">α = 20%</span>
+                        </div>
+                        <div class="scenario-desc">Rapid AI advancement with aggressive corporate adoption. Minimal regulation, strong investment. Fastest growth but highest disruption and inequality risk.</div>
+                        <div class="scenario-params">
+                            <span>Agent: 35%</span><span>Reskill Eff: 10%</span><span>Friction: 5%</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card managed">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">🎯</span>
+                            <span class="scenario-name">Managed</span>
+                            <span class="scenario-badge">α = 10%</span>
+                        </div>
+                        <div class="scenario-desc">Coordinated transition with strong safety nets. High reskilling investment, UBI programs. Balances innovation with social stability.</div>
+                        <div class="scenario-params">
+                            <span>Agent: 18%</span><span>Reskill Eff: 35%</span><span>Friction: 15%</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card resistance">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">🛡️</span>
+                            <span class="scenario-name">Resistance</span>
+                            <span class="scenario-badge">α = 4%</span>
+                        </div>
+                        <div class="scenario-desc">Strong labor protection and regulatory barriers. Heavy AI taxation, employment quotas. Preserves jobs but limits productivity gains.</div>
+                        <div class="scenario-params">
+                            <span>Agent: 6%</span><span>Reskill Eff: 8%</span><span>Friction: 50%</span>
+                        </div>
+                    </div>
+                    <div class="scenario-card cooperative">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">🏛️</span>
+                            <span class="scenario-name">Cooperative</span>
+                            <span class="scenario-badge">α = 12%</span>
+                        </div>
+                        <div class="scenario-desc">Worker-owned automation model. High capital ownership (35%), moderate robot tax. Workers receive dividends as robots replace wages - solving demand crisis through market mechanisms rather than government transfers.</div>
+                        <div class="scenario-params">
+                            <span>Ownership: 35%</span><span>Robot Tax: 5%</span><span>UBI: $12k</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="eq-section">
+            <h4>Core Mathematical Models</h4>
+            <div class="eq-row">
+                <div class="eq-item">
+                    <div class="eq-name">1. Automation Diffusion (S-Curve)</div>
+                    <div class="eq-formula">dρ/dt = κ · α · ρ · (1 - ρ/ρ<sub>max</sub>) · (1 - f) · (1 - τ/2)</div>
+                    <div class="eq-params">
+                        <code>ρ</code>=automation, <code>κ</code>=speed, <code>α</code>=base rate<br>
+                        <code>f</code>=friction, <code>τ</code>=tax burden (NEW: UBI funding slows investment)
+                    </div>
+                </div>
+                <div class="eq-item new">
+                    <div class="eq-name">2. Aggregate Demand </div>
+                    <div class="eq-formula">D = (W · E + UBI · Pop) · (1 + δ)</div>
+                    <div class="eq-params">
+                        <code>W</code>=avg wage, <code>E</code>=employed (M)<br>
+                        <code>UBI</code>=transfer amount, <code>Pop</code>=population<br>
+                        <code>δ</code>=deflation boost to purchasing power
+                    </div>
+                </div>
+            </div>
+            <div class="eq-row">
+                <div class="eq-item new">
+                    <div class="eq-name">3. GDP with Demand Constraint </div>
+                    <div class="eq-formula">g<sub>eff</sub> = g<sub>base</sub> · min(1, D/Y) · (1 - τ·0.3)</div>
+                    <div class="eq-params">
+                        <code>g<sub>base</sub></code>=productivity-driven growth<br>
+                        <code>D/Y</code>=demand/supply ratio (Henry Ford factor)<br>
+                        <code>τ</code>=fiscal drag from UBI taxation
+                    </div>
+                </div>
+                <div class="eq-item new">
+                    <div class="eq-name">4. Fiscal Pressure </div>
+                    <div class="eq-formula">τ = (UBI · Pop · 330M) / (GDP · $28T)</div>
+                    <div class="eq-params">
+                        UBI cost as fraction of GDP<br>
+                        Creates negative feedback: high UBI → high taxes → slower investment
+                    </div>
+                </div>
+            </div>
+            <div class="eq-row">
+                <div class="eq-item new">
+                    <div class="eq-name">5. Technological Deflation </div>
+                    <div class="eq-formula">P<sub>t+1</sub> = P<sub>t</sub> · (1 - 0.02 · ρ̄)</div>
+                    <div class="eq-params">
+                        Prices fall ~2% per 100% automation<br>
+                        <code>δ = (1/P) - 1</code> = purchasing power boost
+                    </div>
+                </div>
+                <div class="eq-item">
+                    <div class="eq-name">6. Social Stress (Enhanced)</div>
+                    <div class="eq-formula">σ = 0.2 + 2u + 2(G-0.35) + σ<sub>ch</sub> - UBI<sub>eff</sub> + τ·0.5</div>
+                    <div class="eq-params">
+                        Now includes fiscal pressure stress<br>
+                        High taxes to fund UBI create political tension
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="param-section">
+            <h4>Sector Parameters</h4>
+            <table class="param-table">
+                <thead><tr><th>Sector</th><th>ρ₀</th><th>ρₘₐₓ</th><th>μ</th><th>Jobs</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td>🏭 Manufacturing</td><td><code>25%</code></td><td><code>85%</code></td><td><code>2.5</code></td><td>12.5M</td><td>High automation potential</td></tr>
+                    <tr><td>🛒 Retail</td><td><code>20%</code></td><td><code>75%</code></td><td><code>2.0</code></td><td>15.5M</td><td>E-commerce driven</td></tr>
+                    <tr><td>🏦 Finance</td><td><code>30%</code></td><td><code>80%</code></td><td><code>3.0</code></td><td>6.8M</td><td>Already digitized</td></tr>
+                    <tr><td>🏥 Healthcare</td><td><code>10%</code></td><td><code>45%</code></td><td><code>1.8</code></td><td>20.5M</td><td>Human-centric</td></tr>
+                    <tr><td>🚛 Logistics</td><td><code>15%</code></td><td><code>90%</code></td><td><code>2.8</code></td><td>10.2M</td><td>Autonomous vehicles</td></tr>
+                    <tr><td>💼 Professional</td><td><code>12%</code></td><td><code>60%</code></td><td><code>2.2</code></td><td>14.0M</td><td>AI assistants</td></tr>
+                    <tr><td>🎓 Education</td><td><code>8%</code></td><td><code>35%</code></td><td><code>1.5</code></td><td>9.5M</td><td>Human essential</td></tr>
+                    <tr><td>🤖 Technology</td><td><code>20%</code></td><td><code>50%</code></td><td><code>4.0</code></td><td>5.5M</td><td>Highest multiplier</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="glossary-section">
+            <h4>📖 Glossary of Key Concepts</h4>
+            <div class="glossary-grid">
+                <!-- NEW v3.0 Concepts -->
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">🛒 Aggregate Demand </div>
+                    <div class="gloss-def">Total purchasing power in the economy from wages and transfers. When demand falls below production capacity, GDP growth stalls regardless of productivity (<strong>Henry Ford Paradox</strong>: robots produce but unemployed can't buy). This addresses the critical demand-side gap in economic modeling.</div>
+                    <div class="gloss-formula"><code>Demand = (Wages × Employed + UBI × Population) × Deflation</code></div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">💸 Fiscal Pressure </div>
+                    <div class="gloss-def">UBI cost as percentage of GDP. High UBI requires high taxes, which slow corporate investment and automation adoption. Creates the <strong>negative feedback loop</strong> missing from simpler models: UBI helps demand but hurts supply-side investment.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh green">0-10%: Sustainable</span>
+                        <span class="thresh amber">10-20%: Straining</span>
+                        <span class="thresh rose">20%+: Critical</span>
+                    </div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">📉 Technological Deflation </div>
+                    <div class="gloss-def">Automation reduces production costs, lowering prices over time. This <strong>increases real purchasing power</strong> even if nominal wages fall. A key mechanism allowing populations to survive technological transition - goods become cheaper faster than incomes fall.</div>
+                    <div class="gloss-formula"><code>Real GDP = Nominal GDP × (1/Price Index)</code></div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">⚖️ Demand-Supply Gap </div>
+                    <div class="gloss-def">Difference between aggregate demand and production capacity. Negative gap = <strong>demand shortage</strong>: factories can produce more than people can afford to buy. This constrains GDP growth regardless of productivity - the mathematical proof of why UBI matters.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh green">>0%: Demand sufficient</span>
+                        <span class="thresh amber">-10% to 0: Mild shortage</span>
+                        <span class="thresh rose">&lt;-10%: Demand crisis</span>
+                    </div>
+                </div>
+                
+                <!-- Core Economic Concepts -->
+                <div class="gloss-item">
+                    <div class="gloss-term">📈 S-Curve (Logistic Growth)</div>
+                    <div class="gloss-def">Mathematical model of technology diffusion. Adoption starts slow (innovators), accelerates rapidly (mass market), then plateaus (saturation). The formula captures this: growth is proportional to both current adoption and remaining potential. Based on Bass (1969) and Rogers' Diffusion of Innovations.</div>
+                    <div class="gloss-formula"><code>dρ/dt = κ · α · ρ · (1 - ρ/ρmax) · (1 - friction)</code></div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">📊 Gini Coefficient</div>
+                    <div class="gloss-def">Standard measure of income/wealth inequality (0-1). Zero = perfect equality, One = one person owns everything. Automation increases Gini (capital owners capture gains), while UBI and reskilling reduce it by redistributing benefits.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh green">0.25-0.35: Nordic levels</span>
+                        <span class="thresh amber">0.35-0.45: US current</span>
+                        <span class="thresh rose">>0.45: Instability risk</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">🔥 Social Stress Index</div>
+                    <div class="gloss-def">Composite indicator (0.1-0.95) of societal tension from unemployment, inequality, pace of change, and fiscal pressure. High stress reduces tech acceptance, slows innovation, and risks social unrest. Also includes fiscal stress - high taxes for UBI create political backlash even if economically necessary.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh green">0.1-0.4: Stable society</span>
+                        <span class="thresh amber">0.4-0.7: Growing tension</span>
+                        <span class="thresh rose">>0.7: Crisis/unrest risk</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">⚡ Productivity Index</div>
+                    <div class="gloss-def">Economic output per unit of input, indexed to 100 in base year (2024). Automation boosts productivity through AI efficiency gains. Each sector has a multiplier (μ) determining how much productivity each automation point delivers. Technology sector: μ=4.0, Education: μ=1.5.</div>
+                    <div class="gloss-formula"><code>Π = 100 × (1 + ρ × μ × 0.1)</code></div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">🤖 Tech Acceptance Rate</div>
+                    <div class="gloss-def">Population percentage viewing AI/automation positively (starts 65%). Evolves based on social stress: successful transitions increase acceptance, while job losses decrease it. Higher acceptance → faster automation adoption, lower regulatory friction. Creates reinforcing loop.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos">↑ Low stress, visible benefits</span>
+                        <span class="eff-item pos">↓ High unemployment, rapid displacement</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">🌐 Economic Inclusivity</div>
+                    <div class="gloss-def">Measure (0.3-0.95) of how broadly automation gains are shared. Low inclusivity = benefits concentrate among tech owners and high-skilled workers. Influenced inversely by Gini, positively by reskilling and UBI. Higher inclusivity → sustainable growth, social stability.</div>
+                    <div class="gloss-formula"><code>I = 0.72 - (G-0.39)×0.5 + R×0.3 + UBI×0.15</code></div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">💡 Innovation Index</div>
+                    <div class="gloss-def">Multiplier (1.0-3.0) for economy's capacity to create new industries and jobs. Higher automation and tech acceptance fuel innovation. Affects new job creation: more innovation means automation creates proportionally more new roles (AI trainers, robot supervisors, prompt engineers).</div>
+                    <div class="gloss-formula"><code>Innovation = 1 + ρ×1.5 + (tech-0.5)×0.5</code></div>
+                </div>
+                
+                <!-- Policy Instruments -->
+                <div class="gloss-item">
+                    <div class="gloss-term">💰 Universal Basic Income (UBI)</div>
+                    <div class="gloss-def">Unconditional cash transfers to all citizens ($0-$36,000/yr). Directly reduces Gini (redistribution) and stress (economic security). Unlike welfare, no work disincentive cliff. Note: high UBI creates fiscal pressure that slows automation investment.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos">Gini: -0.08 at max</span>
+                        <span class="eff-item pos">Stress: -0.20 at max</span>
+                        <span class="eff-item pos">Demand: ↑ supports consumption</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">🎓 Reskilling Programs</div>
+                    <div class="gloss-def">Government workforce retraining (% of GDP). Helps displaced workers transition to new economy jobs. Effectiveness varies by scenario (8%-35% efficiency). <strong>Model note</strong>: 50% reintegration rate is optimistic - real structural unemployment may be stickier.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos">Unemployment: direct reduction</span>
+                        <span class="eff-item pos">Gini: -0.05 per 1% GDP</span>
+                        <span class="eff-item pos">Inclusivity: enables mobility</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">⚙️ Automation Rate (ρ)</div>
+                    <div class="gloss-def">Fraction of sector tasks performed by AI/robots (0-100%). Each sector has initial level (ρ₀) and maximum potential (ρmax). Logistics: 90% max (autonomous vehicles), Education: 35% max (human essential). Higher automation → productivity gains + job displacement.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh cyan">30%: Early automation</span>
+                        <span class="thresh violet">50%: AI-augmented economy</span>
+                        <span class="thresh amber">70%+: Near full automation</span>
+                    </div>
+                </div>
+                
+                <!-- System Dynamics -->
+                <div class="gloss-item">
+                    <div class="gloss-term">🔄 Feedback Loops</div>
+                    <div class="gloss-def">Circular cause-effect chains where outputs become inputs. <strong>Reinforcing (R)</strong>: automation→productivity→profits→investment→more automation. <strong>Balancing (B)</strong>: automation→unemployment→stress→regulation→slower automation. Understanding loops predicts non-linear behavior.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos" style="border-color:var(--green)">R: Productivity spiral ↑↑</span>
+                        <span class="eff-item pos" style="border-color:var(--rose)">B: Social constraint ↓↑</span>
+                    </div>
+                </div>
+                <div class="gloss-item">
+                    <div class="gloss-term">📉 Regulatory Friction (f)</div>
+                    <div class="gloss-def">Dampening factor (0-50%) representing how regulation slows automation. Varies by scenario: Accelerated (5%) = deregulation, Resistance (50%) = strong labor protection. Effective growth = base × (1-f). Note: Tax drag from UBI adds implicit friction.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh cyan">Accelerated: 5%</span>
+                        <span class="thresh green">Managed: 15%</span>
+                        <span class="thresh amber">Baseline: 20%</span>
+                        <span class="thresh rose">Resistance: 50%</span>
+                    </div>
+                </div>
+                
+                <!-- Capital Ownership Model -->
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">🏛️ Worker Ownership</div>
+                    <div class="gloss-def">Percentage of AI/automation capital owned by workers or public (0-50%). Through ESOPs, cooperatives, sovereign wealth funds, or tokenized equity. When workers own the robots, they receive dividends instead of just wages - solving the "who buys the products?" problem without government transfers.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos">Gini: -0.25 at 100% ownership</span>
+                        <span class="eff-item pos">Stress: -0.30 buffer (psychological)</span>
+                        <span class="eff-item pos">Demand: ↑ via dividends</span>
+                    </div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">💎 Capital Gains & Dividends</div>
+                    <div class="gloss-def">Automation generates ~30% of GDP×automation_rate in capital profits annually. Worker ownership entitles workers to proportional dividends. At 35% worker ownership and 50% automation, this yields ~$15,000/person/year in passive income - potentially replacing wages entirely.</div>
+                    <div class="gloss-formula"><code>Dividend = (GDP × ρ × 0.3 × ownership%) / population</code></div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--green)">
+                    <div class="gloss-term">🎯 Autonomous Solvency</div>
+                    <div class="gloss-def">Percentage of population that can survive on passive income alone (dividends + robot tax transfers) without wages or government UBI. This is the "post-work" readiness metric. At 100%, society has achieved true economic freedom from labor - the end goal of the cooperative scenario.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh muted">0-25%: Traditional economy</span>
+                        <span class="thresh cyan">25-50%: Transition phase</span>
+                        <span class="thresh green">>50%: Post-scarcity signals</span>
+                    </div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--amber)">
+                    <div class="gloss-term">🤖 Robot Tax</div>
+                    <div class="gloss-def">Tax on automation profits (0-30%) redistributed to population. Alternative to UBI - funded by capital rather than general taxation. Reduces Gini and funds social programs, but creates some investment drag. Can offset UBI fiscal burden when both are used together.</div>
+                    <div class="gloss-effects">
+                        <span class="eff-item pos">Gini: -0.10 at 30%</span>
+                        <span class="eff-item pos">Funds UBI without income tax</span>
+                        <span class="eff-item pos" style="border-color:var(--amber)">Investment drag: ~50% of rate</span>
+                    </div>
+                </div>
+                <div class="gloss-item" style="border-left-color:var(--amber)">
+                    <div class="gloss-term">🌍 Global Competition</div>
+                    <div class="gloss-def">World average automation grows ~3%/year from 20% baseline. If your economy falls >10% behind, export competitiveness suffers and GDP growth is penalized. This creates external pressure to automate regardless of domestic social concerns - the "race to the bottom" dynamic.</div>
+                    <div class="gloss-thresholds">
+                        <span class="thresh green">>+5%: Competitive advantage</span>
+                        <span class="thresh amber">±5%: Parity</span>
+                        <span class="thresh rose">&lt;-10%: Export penalty active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ref-section">
+            <h4>Theoretical Foundations</h4>
+            <div class="ref-grid">
+                <div class="ref-item">
+                    <div class="concept">Demand-Side Economics</div>
+                    <div class="source">Keynes (1936) "General Theory" - Aggregate demand determines output; supply doesn't create its own demand.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">Henry Ford Paradox</div>
+                    <div class="source">Ford's insight that workers must afford products they make. Automation without redistribution collapses demand.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">Technological Deflation</div>
+                    <div class="source">Rifkin "Zero Marginal Cost Society" (2014) - Technology drives prices toward zero, fundamentally changing economics.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">Capital Ownership Models</div>
+                    <div class="source">Piketty (2014), Varoufakis "Another Now" (2020) - Broad-based capital ownership as alternative to wealth concentration.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">Worker Cooperatives</div>
+                    <div class="source">Mondragon Corporation model, Platform Cooperativism movement - Employee ownership at scale.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">Robot Taxation</div>
+                    <div class="source">Bill Gates (2017), EU Parliament debates - Taxing automation to fund social programs.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">UBI Fiscal Analysis</div>
+                    <div class="source">Widerquist (2018) "Cost of Basic Income" - Net cost analysis considering tax recapture.</div>
+                </div>
+                <div class="ref-item">
+                    <div class="concept">System Dynamics</div>
+                    <div class="source">Sterman "Business Dynamics" (2000) - Feedback loops, stocks/flows for complex system modeling.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>Agentic Economy Simulator • Prof. Alp Ustundag • Istanbul Technical University</footer>
+</div>
+<script>
+class Sim{
+    constructor(){
+        this.yr=2026;this.end=2042;this.running=false;this.intv=null;
+        this.p=this.getP('baseline');
+        this.sec=this.initSec();
+        // State with demand-side + capital ownership dynamics
+        this.s={
+            gdp:100,gdpG:.025,prod:100,emp:160,unemp:.04,gini:.39,auto:.18,agent:.08,
+            stress:.3,tech:.68,incl:.72,innov:1,resk:0,disp:0,newJ:0,
+            demand:100,fiscal:0,dsGap:0,deflation:1.0,priceIdx:1.0,
+            realGdp:100,taxDrag:0,ubiCost:0,
+            // Capital Ownership variables
+            capGains:0,workerDiv:0,autoSolv:0,
+            // Global Competition variables
+            worldAuto:.20,compGap:0,expPenalty:0,robotTaxRev:0
+        };
+        this.h={yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],autoSolv:[0]};
+        this.ev=[];
+        this.pop=330; // US population in millions
+        this.baseGdp=28; // Trillion USD base
+        this.avgWage=60000; // Average annual wage
+        this.initCharts();this.bindEvents();this.updateUI();
+    }
+    initSec(){return[
+        {n:'Manufacturing',i:'🏭',c:'#06b6d4',e:12.2,b:12.5,a:.28,m:.85,p:100,mu:2.5,nj:0,lj:0},
+        {n:'Retail',i:'🛒',c:'#f43f5e',e:15.0,b:15.5,a:.24,m:.75,p:100,mu:2.0,nj:0,lj:0},
+        {n:'Finance',i:'🏦',c:'#f59e0b',e:6.5,b:6.8,a:.35,m:.80,p:100,mu:3.0,nj:0,lj:0},
+        {n:'Healthcare',i:'🏥',c:'#10b981',e:20.8,b:20.5,a:.12,m:.45,p:100,mu:1.8,nj:0,lj:0},
+        {n:'Logistics',i:'🚛',c:'#f97316',e:9.8,b:10.2,a:.20,m:.90,p:100,mu:2.8,nj:0,lj:0},
+        {n:'Professional',i:'💼',c:'#8b5cf6',e:13.5,b:14.0,a:.15,m:.60,p:100,mu:2.2,nj:0,lj:0},
+        {n:'Education',i:'🎓',c:'#0ea5e9',e:9.6,b:9.5,a:.10,m:.35,p:100,mu:1.5,nj:0,lj:0},
+        {n:'Technology',i:'🤖',c:'#22c55e',e:5.8,b:5.5,a:.25,m:.50,p:100,mu:4.0,nj:0,lj:0}
+    ]}
+    getP(s){return{
+        baseline:{au:.08,ag:.12,re:.15,fr:.2},
+        accelerated:{au:.20,ag:.35,re:.10,fr:.05},
+        managed:{au:.10,ag:.18,re:.35,fr:.15},
+        resistance:{au:.04,ag:.06,re:.08,fr:.5},
+        cooperative:{au:.12,ag:.20,re:.25,fr:.12}
+    }[s]}
+    
+    step(){
+        if(this.yr>=this.end){this.stop();return}
+        this.yr++;
+        var p=this.p;
+        var sp=+document.getElementById('autoSpeed').value/5;
+        var ubi=+document.getElementById('ubi').value;
+        var rsk=+document.getElementById('reskill').value/100;
+        var unempCap=+document.getElementById('unempCap').value/100;
+        var workerOwn=+document.getElementById('workerOwn').value/100;
+        var robotTax=+document.getElementById('robotTax').value/100;
+        
+        // === CAPITAL OWNERSHIP: Calculate automation profits ===
+        var gdpT = (this.s.gdp / 100) * this.baseGdp;
+        var automationProfits = gdpT * this.s.auto * 0.3; // 30% of GDP×automation goes to capital
+        this.s.capGains = automationProfits;
+        
+        // Dividend income per capita from worker ownership
+        var workerDividends = automationProfits * workerOwn * 1000000 / this.pop; // $/person/year
+        this.s.dividend = workerDividends;
+        
+        // Robot tax revenue
+        this.s.robotTaxRev = automationProfits * robotTax;
+        
+        // Autonomous Solvency: % who can survive on passive income alone
+        var povertyLine = 15000; // $15k/year poverty line
+        var passiveIncome = workerDividends + (this.s.robotTaxRev * 1000000 / this.pop);
+        this.s.solvency = Math.min(100, (passiveIncome / povertyLine) * 100);
+        
+        // === GLOBAL COMPETITION ===
+        this.s.worldAuto = 0.20 + (this.yr - 2026) * 0.03; // World grows 3%/year from 20%
+        this.s.compGap = (this.s.auto - this.s.worldAuto) * 100;
+        this.s.expPenalty = this.s.compGap < -10 ? Math.abs(this.s.compGap + 10) * 0.01 : 0; // Penalty if >10% behind
+        
+        // === UBI + Robot Tax combined fiscal calculation ===
+        var ubiCostT = (ubi * this.pop) / 1000000; // Trillion USD
+        var netUbiCost = Math.max(0, ubiCostT - this.s.robotTaxRev); // Robot tax offsets UBI cost
+        this.s.fiscal = Math.min(0.4, netUbiCost / gdpT);
+        this.s.ubiCost = ubiCostT;
+        this.s.taxDrag = (this.s.fiscal + robotTax * 0.5) * 0.3; // Robot tax also creates some drag
+        
+        var tD=0,tN=0,tP=0,tE=0;
+        var self=this;
+        
+        // Sector dynamics with tax drag affecting automation investment
+        this.sec.forEach(function(s){
+            // NEW: Tax burden slows automation investment
+            var taxFactor = 1 - self.s.taxDrag;
+            var g = p.au * sp * (1-p.fr) * taxFactor * s.a * (1-s.a/s.m);
+            s.a = Math.min(s.m, s.a + g);
+            s.p = 100 * (1 + s.a * s.mu * 0.1);
+            tP += s.p * s.e;
+            var d = s.b * g * 0.6;
+            s.lj += d; tD += d;
+            var n = s.b * s.a * 0.15 * (1 + self.s.innov * 0.1) * 0.3;
+            s.nj += n; tN += n;
+            s.e = Math.max(s.b * (1 - s.a * 0.5), s.b * 0.2);
+            tE += s.e;
+        });
+        
+        var pI = tP / (this.sec.length * 100);
+        
+        // === NEW v3.0: Technological Deflation ===
+        this.s.priceIdx = Math.max(0.5, this.s.priceIdx * (1 - 0.02 * this.s.auto));
+        this.s.deflation = 1 / this.s.priceIdx;
+        
+        // === Aggregate Demand with Capital Income ===
+        var wageIncome = tE * this.avgWage / 1000000; // Trillion
+        var ubiIncome = ubiCostT;
+        var dividendIncome = (this.s.dividend * this.pop) / 1000000; // Trillion from worker ownership
+        var robotTaxTransfers = this.s.robotTaxRev; // Redistributed to population
+        var totalDemand = (wageIncome + ubiIncome + dividendIncome + robotTaxTransfers) * this.s.deflation;
+        var supplyCapacity = gdpT * (pI / 100);
+        this.s.demand = (totalDemand / supplyCapacity) * 100;
+        this.s.dsGap = ((totalDemand - supplyCapacity) / supplyCapacity) * 100;
+        
+        // === GDP with Demand Constraint + Global Competition ===
+        var baseGrowth = 0.02 + (Math.sqrt(pI) - 1) * 0.03;
+        var demandFactor = Math.min(1, this.s.demand / 100);
+        var fiscalDrag = 1 - this.s.taxDrag;
+        var competitionDrag = 1 - this.s.expPenalty; // Penalty for falling behind globally
+        this.s.gdpG = baseGrowth * demandFactor * fiscalDrag * competitionDrag;
+        
+        // Prevent negative GDP collapse but allow stagnation
+        this.s.gdpG = Math.max(-0.05, this.s.gdpG);
+        this.s.gdp *= (1 + this.s.gdpG);
+        this.s.realGdp = this.s.gdp * this.s.deflation;
+        
+        this.s.prod = pI * 100;
+        this.s.emp = tE;
+        this.s.disp += tD;
+        this.s.newJ += tN;
+        
+        // Reskilling with realistic efficiency
+        var reskillEff = p.re; // Scenario-dependent (8%-35%)
+        var re = Math.min(this.s.disp * 0.1, tD * rsk * reskillEff * 10);
+        this.s.resk += re;
+        
+        // === CAPITAL OWNERSHIP MODEL ===
+        var workerOwn = +document.getElementById('workerOwn').value / 100;
+        var robotTax = +document.getElementById('robotTax').value / 100;
+        
+        // Capital gains = automation profits (productivity gain * GDP share)
+        var autoProfit = (this.s.prod - 100) / 100 * gdpT * 0.4; // 40% of productivity gain goes to capital
+        this.s.capGains = autoProfit;
+        
+        // Worker dividend = capital gains * ownership rate
+        var workerDividend = autoProfit * workerOwn;
+        this.s.workerDiv = (workerDividend * 1000000) / this.pop; // Per capita in $
+        
+        // Robot tax revenue
+        this.s.robotTaxRev = autoProfit * robotTax;
+        
+        // Autonomous Solvency = % of population that can survive on passive income alone
+        var livingWage = 25000; // Minimum to survive per year
+        var passiveIncome = this.s.workerDiv + (this.s.robotTaxRev * 1000000 / this.pop);
+        this.s.autoSolv = Math.min(100, (passiveIncome / livingWage) * 100);
+        
+        // === GLOBAL COMPETITION ===
+        // World automation grows at 3% per year from base 20%
+        this.s.worldAuto = Math.min(0.75, 0.20 * Math.pow(1.03, this.yr - 2026));
+        
+        // Competitiveness gap
+        this.s.compGap = (this.s.auto - this.s.worldAuto) * 100;
+        
+        // Export penalty if falling behind (affects GDP)
+        if (this.s.auto < this.s.worldAuto) {
+            this.s.expPenalty = Math.min(0.15, (this.s.worldAuto - this.s.auto) * 0.5);
+            this.s.gdpG -= this.s.expPenalty * 0.3; // GDP drag
+        } else {
+            this.s.expPenalty = 0;
+        }
+        
+        // === ENHANCED DEMAND with Capital Income ===
+        var dividendIncome = workerDividend; // Trillion
+        var robotTaxIncome = this.s.robotTaxRev; // Goes to social programs
+        totalDemand = (wageIncome + ubiIncome + dividendIncome + robotTaxIncome) * this.s.deflation;
+        this.s.demand = (totalDemand / supplyCapacity) * 100;
+        this.s.dsGap = ((totalDemand - supplyCapacity) / supplyCapacity) * 100;
+        
+        // === Configurable unemployment cap ===
+        var unempCap = +document.getElementById('unempCap').value / 100;
+        this.s.unemp = Math.max(0.02, Math.min(unempCap, (165 - tE - this.s.resk * 0.5) / 165));
+        
+        // Gini with capital ownership effect (more ownership = less inequality)
+        this.s.gini = Math.max(0.25, Math.min(0.55, 
+            0.39 + this.s.auto * 0.15 - (ubi/36000) * 0.08 - rsk * 0.05 
+            + this.s.fiscal * 0.05 - workerOwn * 0.2 - robotTax * 0.1
+        ));
+        
+        // Social Stress - reduced by capital ownership (people feel they benefit from automation)
+        var ownershipRelief = workerOwn * 0.3 + (this.s.autoSolv / 100) * 0.2;
+        var changeStress = (this.s.auto > 0.4 && this.s.auto < 0.7) ? 0.15 : 0;
+        var fiscalStress = this.s.fiscal * 0.5;
+        this.s.stress = Math.max(0.1, Math.min(0.95, 
+            0.2 + this.s.unemp * 2 + (this.s.gini - 0.35) * 2 + changeStress 
+            - (ubi/36000) * 0.2 + fiscalStress - ownershipRelief
+        ));
+        
+        this.s.tech = Math.min(0.95, this.s.tech + 0.02 * (1 - this.s.stress));
+        this.s.incl = Math.max(0.3, Math.min(0.95, 
+            0.72 - (this.s.gini - 0.39) * 0.5 + rsk * 0.3 + (ubi/36000) * 0.15
+        ));
+        this.s.innov = Math.min(3, 1 + this.s.auto * 1.5 + (this.s.tech - 0.5) * 0.5);
+        this.s.auto = this.sec.reduce(function(a,s){return a+s.a}, 0) / this.sec.length;
+        this.s.agent = Math.min(0.9, this.s.agent + p.ag * sp * (1 - p.fr) * (1 - this.s.taxDrag));
+        
+        this.genEv();
+        this.h.yr.push(this.yr);
+        this.h.gdp.push(this.s.gdp);
+        this.h.prod.push(this.s.prod);
+        this.h.unemp.push(this.s.unemp);
+        this.h.gini.push(this.s.gini);
+        this.h.auto.push(this.s.auto);
+        this.h.stress.push(this.s.stress);
+        this.h.demand.push(this.s.demand);
+        this.h.fiscal.push(this.s.fiscal * 100);
+        this.h.autoSolv.push(this.s.autoSolv);
+        this.updateUI();
+        this.updateCharts();
+    }
+    
+    genEv(){
+        var pa=this.h.auto[this.h.auto.length-1]||0;
+        var pu=this.h.unemp[this.h.unemp.length-1]||0;
+        var pg=this.h.gini[this.h.gini.length-1]||0;
+        var pd=this.h.gdp[this.h.gdp.length-1]||100;
+        var pf=this.h.fiscal[this.h.fiscal.length-1]||0;
+        var pdem=this.h.demand[this.h.demand.length-1]||100;
+        var psolv=this.h.autoSolv[this.h.autoSolv.length-1]||0;
+        
+        // Core economic events
+        if(this.s.auto>.3&&pa<=.3) this.ev.unshift({y:this.yr,t:'neu',x:'🤖 Automation crossed 30%'});
+        if(this.s.auto>.5&&pa<=.5) this.ev.unshift({y:this.yr,t:'neu',x:'⚡ 50% AI-augmented economy'});
+        if(this.s.unemp>.1&&pu<=.1) this.ev.unshift({y:this.yr,t:'neg',x:'⚠️ Unemployment exceeded 10%'});
+        if(this.s.unemp>.15&&pu<=.15) this.ev.unshift({y:this.yr,t:'neg',x:'🚨 Unemployment crisis: >15%'});
+        if(this.s.unemp>.25&&pu<=.25) this.ev.unshift({y:this.yr,t:'neg',x:'💀 Great Depression level: >25%'});
+        if(this.s.gini>.45&&pg<=.45) this.ev.unshift({y:this.yr,t:'neg',x:'📊 Inequality critical: Gini>0.45'});
+        if(this.s.gini<.35&&pg>=.35) this.ev.unshift({y:this.yr,t:'pos',x:'⚖️ Inequality reduced: Gini<0.35'});
+        if(this.s.gdp>150&&pd<=150) this.ev.unshift({y:this.yr,t:'pos',x:'📈 GDP grew 50% from baseline'});
+        if(this.s.gdp>200&&pd<=200) this.ev.unshift({y:this.yr,t:'pos',x:'🚀 GDP doubled - abundance era'});
+        if(this.s.stress>.7&&this.h.stress[this.h.stress.length-1]<=.7) this.ev.unshift({y:this.yr,t:'neg',x:'🔥 Social stress critical >0.70'});
+        
+        // Demand-side events
+        if(this.s.demand<90&&pdem>=90) this.ev.unshift({y:this.yr,t:'warn',x:'🛒 Demand shortage emerging (<90%)'});
+        if(this.s.demand<80&&pdem>=80) this.ev.unshift({y:this.yr,t:'neg',x:'📉 Henry Ford Paradox: demand crisis'});
+        if(this.s.fiscal*100>15&&pf<=15) this.ev.unshift({y:this.yr,t:'warn',x:'💸 Fiscal pressure high: UBI >15% GDP'});
+        if(this.s.fiscal*100>25&&pf<=25) this.ev.unshift({y:this.yr,t:'neg',x:'🏛️ Fiscal crisis: UBI >25% GDP'});
+        if(this.s.priceIdx<0.8) this.ev.unshift({y:this.yr,t:'pos',x:'📉 Deflation: prices down 20%+'});
+        if(this.s.gdpG<0&&this.h.gdp.length>1) this.ev.unshift({y:this.yr,t:'neg',x:'📊 GDP contraction - recession'});
+        
+        // Capital ownership events
+        if(this.s.autoSolv>25&&psolv<=25) this.ev.unshift({y:this.yr,t:'pos',x:'🏛️ 25% can live on passive income'});
+        if(this.s.autoSolv>50&&psolv<=50) this.ev.unshift({y:this.yr,t:'pos',x:'🎯 Majority autonomous solvency!'});
+        if(this.s.workerDiv>10000) this.ev.unshift({y:this.yr,t:'pos',x:'💰 Dividend income >$10K/person'});
+        
+        // Global competition events
+        if(this.s.compGap<-10) this.ev.unshift({y:this.yr,t:'neg',x:'🌍 Falling behind: -10% vs world'});
+        if(this.s.compGap>10) this.ev.unshift({y:this.yr,t:'pos',x:'🏆 Competitive lead: +10% vs world'});
+        if(this.s.expPenalty>0.05) this.ev.unshift({y:this.yr,t:'neg',x:'📦 Export penalty: competitiveness drag'});
+        
+        this.ev = this.ev.slice(0,25);
+    }
+    
+    updateUI(){
+        document.getElementById('year').textContent = this.yr;
+        var st = this.s;
+        
+        // Capital Ownership metrics
+        var workerOwn = +document.getElementById('workerOwn').value;
+        document.getElementById('ownershipRate').textContent = workerOwn + '%';
+        document.getElementById('ownershipRate').style.color = workerOwn > 20 ? 'var(--green)' : 'var(--muted)';
+        
+        document.getElementById('capitalGains').textContent = '$' + st.capGains.toFixed(1) + 'T';
+        document.getElementById('capitalGains').style.color = 'var(--amber)';
+        
+        document.getElementById('dividendIncome').textContent = '$' + Math.round(st.workerDiv).toLocaleString() + '/yr';
+        document.getElementById('dividendIncome').style.color = st.workerDiv > 5000 ? 'var(--green)' : 'var(--cyan)';
+        
+        var solvColor = st.autoSolv > 50 ? 'green' : st.autoSolv > 25 ? 'cyan' : 'muted';
+        document.getElementById('autoSolvency').textContent = st.autoSolv.toFixed(0) + '%';
+        document.getElementById('autoSolvency').style.color = 'var(--' + solvColor + ')';
+        
+        // Global Competition metrics
+        document.getElementById('worldAuto').textContent = (st.worldAuto * 100).toFixed(0) + '%';
+        document.getElementById('worldAuto').style.color = 'var(--muted)';
+        
+        var gapSign = st.compGap >= 0 ? '+' : '';
+        var compColor = st.compGap > 5 ? 'green' : st.compGap > -5 ? 'amber' : 'rose';
+        document.getElementById('compGap').textContent = gapSign + st.compGap.toFixed(0) + '%';
+        document.getElementById('compGap').style.color = 'var(--' + compColor + ')';
+        
+        document.getElementById('exportPenalty').textContent = (st.expPenalty * 100).toFixed(1) + '%';
+        document.getElementById('exportPenalty').style.color = st.expPenalty > 0 ? 'var(--rose)' : 'var(--green)';
+        
+        document.getElementById('robotTaxRev').textContent = '$' + st.robotTaxRev.toFixed(1) + 'T';
+        document.getElementById('robotTaxRev').style.color = 'var(--violet)';
+        
+        // Demand-side metrics
+        var demandColor = st.demand >= 95 ? 'cyan' : st.demand >= 80 ? 'amber' : 'rose';
+        document.getElementById('demand').textContent = st.demand.toFixed(0);
+        document.getElementById('demand').style.color = 'var(--' + demandColor + ')';
+        document.getElementById('demandFill').style.width = Math.min(100, st.demand) + '%';
+        document.getElementById('demandFill').style.background = 'var(--' + demandColor + ')';
+        
+        var fiscalColor = st.fiscal < 0.1 ? 'green' : st.fiscal < 0.2 ? 'amber' : 'rose';
+        document.getElementById('fiscal').textContent = (st.fiscal * 100).toFixed(1) + '%';
+        document.getElementById('fiscal').style.color = 'var(--' + fiscalColor + ')';
+        document.getElementById('fiscalFill').style.width = Math.min(100, st.fiscal * 250) + '%';
+        document.getElementById('fiscalFill').style.background = 'var(--' + fiscalColor + ')';
+        document.getElementById('ubiCost').textContent = '$' + st.ubiCost.toFixed(1) + 'T';
+        document.getElementById('taxDrag').textContent = (st.taxDrag * 100).toFixed(1) + '%';
+        
+        var gapColor = st.dsGap >= 0 ? 'green' : st.dsGap > -10 ? 'amber' : 'rose';
+        document.getElementById('dsGap').textContent = (st.dsGap >= 0 ? '+' : '') + st.dsGap.toFixed(1) + '%';
+        document.getElementById('dsGap').style.color = 'var(--' + gapColor + ')';
+        document.getElementById('dsGapFill').style.width = (50 + st.dsGap) + '%';
+        document.getElementById('dsGapFill').style.background = 'var(--' + gapColor + ')';
+        
+        var deflColor = st.deflation > 1.1 ? 'green' : 'amber';
+        document.getElementById('deflation').textContent = st.priceIdx.toFixed(2);
+        document.getElementById('deflation').style.color = 'var(--' + deflColor + ')';
+        document.getElementById('deflationFill').style.width = (st.priceIdx * 50) + '%';
+        
+        // Main stats
+        document.getElementById('stats').innerHTML =
+            '<div class="stat pos"><div class="stat-lbl">GDP Index</div><div class="stat-val g">'+st.gdp.toFixed(1)+'</div><div class="stat-sub">'+(st.gdpG>=0?'+':'')+(st.gdpG*100).toFixed(1)+'%/yr</div></div>'+
+            '<div class="stat '+(st.unemp>.08?'neg':'pos')+'"><div class="stat-lbl">Unemployment</div><div class="stat-val '+(st.unemp>.08?'r':'g')+'">'+(st.unemp*100).toFixed(1)+'%</div><div class="stat-sub">'+st.emp.toFixed(1)+'M jobs</div></div>'+
+            '<div class="stat hi"><div class="stat-lbl">Productivity</div><div class="stat-val c">'+st.prod.toFixed(0)+'</div><div class="stat-sub">+'+(st.prod-100).toFixed(0)+'%</div></div>'+
+            '<div class="stat '+(st.gini>.42?'neg':'neu')+'"><div class="stat-lbl">Gini</div><div class="stat-val '+(st.gini>.42?'r':'y')+'">'+st.gini.toFixed(3)+'</div><div class="stat-sub">'+(st.gini>.42?'High':'OK')+'</div></div>'+
+            '<div class="stat hi"><div class="stat-lbl">Automation</div><div class="stat-val v">'+(st.auto*100).toFixed(0)+'%</div><div class="stat-sub">Agent '+(st.agent*100).toFixed(0)+'%</div></div>'+
+            '<div class="stat '+(st.stress>.5?'neg':'pos')+'"><div class="stat-lbl">Stress</div><div class="stat-val '+(st.stress>.5?'r':'g')+'">'+st.stress.toFixed(2)+'</div><div class="stat-sub">'+(st.stress>.7?'Critical':st.stress>.4?'Elevated':'Stable')+'</div></div>'+
+            '<div class="stat pos"><div class="stat-lbl">New Jobs</div><div class="stat-val g">'+st.newJ.toFixed(1)+'M</div><div class="stat-sub">Cumulative</div></div>'+
+            '<div class="stat neg"><div class="stat-lbl">Displaced</div><div class="stat-val r">'+st.disp.toFixed(1)+'M</div><div class="stat-sub">Cumulative</div></div>';
+        
+        // Sector table
+        var sb = '';
+        this.sec.forEach(function(s){
+            var nt = s.nj - s.lj;
+            sb += '<tr><td>'+s.i+' '+s.n+'</td><td><span class="prog"><span class="prog-fill" style="width:'+(s.a*100)+'%"></span></span>'+(s.a*100).toFixed(0)+'%</td><td>'+s.e.toFixed(1)+'</td><td style="color:var(--green)">'+s.p.toFixed(0)+'</td><td style="color:var(--green)">+'+s.nj.toFixed(2)+'</td><td style="color:var(--rose)">-'+s.lj.toFixed(2)+'</td><td style="color:var(--'+(nt>=0?'green':'rose')+')">'+(nt>=0?'+':'')+nt.toFixed(2)+'</td></tr>';
+        });
+        document.getElementById('secBody').innerHTML = sb;
+        
+        // Events
+        var el = '';
+        this.ev.forEach(function(e){
+            el += '<div class="event"><span class="event-yr">'+e.y+'</span><span class="event-txt '+e.t+'">'+e.x+'</span></div>';
+        });
+        document.getElementById('eventLog').innerHTML = el || '<p style="color:var(--muted);font-size:.7rem">Events will appear during simulation...</p>';
+    }
+    
+    initCharts(){
+        var o = {responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#71717a',font:{size:9}}}},scales:{x:{grid:{color:'#27272a'},ticks:{color:'#52525b',font:{size:8}}},y:{grid:{color:'#27272a'},ticks:{color:'#52525b',font:{size:8}}}}};
+        
+        // GDP chart now includes Demand
+        this.gdpC = new Chart(document.getElementById('gdpChart'),{type:'line',data:{labels:this.h.yr,datasets:[
+            {label:'GDP',data:this.h.gdp,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,.1)',fill:true,tension:.4},
+            {label:'Demand',data:this.h.demand,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:false,tension:.4,borderDash:[5,5]}
+        ]},options:o});
+        
+        this.unempC = new Chart(document.getElementById('unempChart'),{type:'line',data:{labels:this.h.yr,datasets:[
+            {label:'Unemployment %',data:this.h.unemp.map(function(u){return u*100}),borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,.1)',fill:true,tension:.4}
+        ]},options:Object.assign({},o,{scales:{x:o.scales.x,y:{grid:{color:'#27272a'},ticks:{color:'#52525b',font:{size:8}},min:0,max:50}}})});
+        
+        // Gini chart now includes Fiscal Pressure
+        this.giniC = new Chart(document.getElementById('giniChart'),{type:'line',data:{labels:this.h.yr,datasets:[
+            {label:'Gini',data:this.h.gini,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:false,tension:.4},
+            {label:'Stress',data:this.h.stress,borderColor:'#f43f5e',backgroundColor:'rgba(244,63,94,.1)',fill:false,tension:.4},
+            {label:'Fiscal %',data:this.h.fiscal,borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.1)',fill:false,tension:.4,borderDash:[3,3]}
+        ]},options:Object.assign({},o,{scales:{x:o.scales.x,y:{grid:{color:'#27272a'},ticks:{color:'#52525b',font:{size:8}},min:0,max:1}}})});
+        
+        var secNames = this.sec.map(function(s){return s.n});
+        this.secC = new Chart(document.getElementById('secChart'),{type:'bar',data:{labels:secNames,datasets:[{label:'Automation %',data:this.sec.map(function(s){return s.a*100}),backgroundColor:this.sec.map(function(s){return s.c+'80'}),borderColor:this.sec.map(function(s){return s.c}),borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'#27272a'},ticks:{color:'#52525b',font:{size:9}},min:0,max:100},y:{grid:{color:'#27272a'},ticks:{color:'#a1a1aa',font:{size:10}}}}}});
+    }
+    
+    updateCharts(){
+        this.gdpC.data.labels = this.h.yr;
+        this.gdpC.data.datasets[0].data = this.h.gdp;
+        this.gdpC.data.datasets[1].data = this.h.demand;
+        this.gdpC.update('none');
+        
+        this.unempC.data.labels = this.h.yr;
+        this.unempC.data.datasets[0].data = this.h.unemp.map(function(u){return u*100});
+        this.unempC.update('none');
+        
+        this.giniC.data.labels = this.h.yr;
+        this.giniC.data.datasets[0].data = this.h.gini;
+        this.giniC.data.datasets[1].data = this.h.stress;
+        this.giniC.data.datasets[2].data = this.h.fiscal;
+        this.giniC.update('none');
+        
+        this.secC.data.datasets[0].data = this.sec.map(function(s){return s.a*100});
+        this.secC.update('none');
+    }
+    
+    start(){
+        if(this.running) return;
+        this.running = true;
+        document.body.classList.add('running');
+        var self = this;
+        this.intv = setInterval(function(){self.step()}, +document.getElementById('speed').value);
+    }
+    
+    stop(){
+        this.running = false;
+        document.body.classList.remove('running');
+        if(this.intv){clearInterval(this.intv);this.intv=null}
+    }
+    
+    reset(){
+        this.stop();
+        this.yr = 2026;
+        this.sec = this.initSec();
+        this.s = {
+            gdp:100,gdpG:.025,prod:100,emp:160,unemp:.04,gini:.39,auto:.18,agent:.08,
+            stress:.3,tech:.68,incl:.72,innov:1,resk:0,disp:0,newJ:0,
+            demand:100,fiscal:0,dsGap:0,deflation:1.0,priceIdx:1.0,
+            realGdp:100,taxDrag:0,ubiCost:0,
+            capGains:0,workerDiv:0,autoSolv:0,
+            worldAuto:.20,compGap:0,expPenalty:0,robotTaxRev:0
+        };
+        this.h = {yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],autoSolv:[0]};
+        this.ev = [];
+        this.updateUI();
+        this.updateCharts();
+    }
+    
+    bindEvents(){
+        var self = this;
+        document.getElementById('startBtn').onclick = function(){self.start()};
+        document.getElementById('pauseBtn').onclick = function(){self.stop()};
+        document.getElementById('resetBtn').onclick = function(){self.reset()};
+        document.getElementById('scenario').onchange = function(e){
+            self.p = self.getP(e.target.value);
+            var d = {
+                baseline:{sp:5,u:0,r:0.5,wo:5,rt:0},
+                accelerated:{sp:8,u:24000,r:1,wo:5,rt:0},
+                managed:{sp:5,u:18000,r:3,wo:15,rt:10},
+                resistance:{sp:3,u:0,r:0.5,wo:5,rt:20},
+                cooperative:{sp:6,u:12000,r:2,wo:35,rt:5}
+            }[e.target.value];
+            document.getElementById('autoSpeed').value = d.sp;
+            document.getElementById('autoSpeedVal').textContent = d.sp + 'x';
+            document.getElementById('ubi').value = d.u;
+            document.getElementById('ubiVal').textContent = '$' + d.u.toLocaleString();
+            document.getElementById('reskill').value = d.r;
+            document.getElementById('reskillVal').textContent = d.r + '%';
+            document.getElementById('workerOwn').value = d.wo;
+            document.getElementById('workerOwnVal').textContent = d.wo + '%';
+            document.getElementById('robotTax').value = d.rt;
+            document.getElementById('robotTaxVal').textContent = d.rt + '%';
+        };
+        document.getElementById('autoSpeed').oninput = function(e){document.getElementById('autoSpeedVal').textContent = e.target.value + 'x'};
+        document.getElementById('ubi').oninput = function(e){document.getElementById('ubiVal').textContent = '$' + (+e.target.value).toLocaleString()};
+        document.getElementById('reskill').oninput = function(e){document.getElementById('reskillVal').textContent = e.target.value + '%'};
+        document.getElementById('workerOwn').oninput = function(e){document.getElementById('workerOwnVal').textContent = e.target.value + '%'};
+        document.getElementById('robotTax').oninput = function(e){document.getElementById('robotTaxVal').textContent = e.target.value + '%'};
+        document.getElementById('speed').onchange = function(){if(self.running){self.stop();self.start()}};
+    }
+}
+new Sim();
+</script>
+</body>
+</html>
