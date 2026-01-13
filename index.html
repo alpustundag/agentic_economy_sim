@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XRV0JVTY6Q"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-XRV0JVTY6Q');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agentic Economy Simulator</title>
@@ -23,14 +15,14 @@
         h1{font-size:1.6rem;background:linear-gradient(135deg,var(--cyan),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
         .subtitle{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
         .version-badge{display:inline-block;background:var(--violet);color:white;font-size:.5rem;padding:2px 6px;border-radius:3px;margin-left:8px;vertical-align:middle}
-        .controls{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;align-items:end}
-        .ctrl{display:flex;flex-direction:column;gap:3px}
-        .ctrl label{font-size:.6rem;color:var(--muted);text-transform:uppercase}
+        .controls{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+        .ctrl{display:flex;flex-direction:column;gap:4px}
+        .ctrl label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
         .ctrl select{background:#1a1a1f;border:1px solid var(--border);border-radius:4px;padding:6px 8px;color:var(--text);font-size:.75rem}
-        .ctrl input[type=range]{-webkit-appearance:none;background:#1a1a1f;height:4px;border-radius:3px}
-        .ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--cyan);border-radius:50%;cursor:pointer}
-        .range-row{display:flex;align-items:center;gap:6px}
-        .range-val{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--cyan);min-width:40px;text-align:right}
+        .ctrl input[type=range]{-webkit-appearance:none;background:#1a1a1f;height:4px;border-radius:3px;flex:1;min-width:60px}
+        .ctrl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--cyan);border-radius:50%;cursor:pointer}
+        .range-row{display:flex;align-items:center;gap:10px}
+        .range-val{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--cyan);min-width:60px;text-align:center;font-weight:600;background:rgba(6,182,212,0.15);padding:4px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0}
         .btns{display:flex;gap:5px}
         .btn{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:7px 12px;border:none;border-radius:4px;cursor:pointer}
         .btn-p{background:var(--cyan);color:var(--bg)}
@@ -123,6 +115,25 @@
         .scenario-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:10px}
         .scenario-params{display:flex;flex-wrap:wrap;gap:6px}
         .scenario-params span{font-size:.6rem;background:var(--bg);padding:3px 6px;border-radius:3px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+        
+        /* Sovereign AI Fund Panel */
+        .fund-panel{background:linear-gradient(135deg,#0a1628 0%,#1a1a2e 100%);border:1px solid var(--cyan);border-radius:10px;padding:15px;margin-bottom:12px}
+        .fund-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid rgba(6,182,212,.3)}
+        .fund-icon{font-size:1.5rem}
+        .fund-title{font-size:.9rem;font-weight:600;color:var(--cyan)}
+        .fund-subtitle{font-size:.6rem;color:var(--muted);margin-left:auto}
+        .fund-flow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+        .flow-step{background:rgba(0,0,0,.3);border-radius:6px;padding:10px 12px;text-align:center;min-width:100px;flex:1}
+        .flow-step.highlight{background:rgba(6,182,212,.15);border:1px solid var(--cyan)}
+        .flow-label{font-size:.55rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+        .flow-val{font-size:.9rem;font-weight:600;color:var(--text);font-family:'JetBrains Mono',monospace}
+        .flow-arrow{color:var(--cyan);font-size:1.2rem}
+        .fund-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+        @media(max-width:700px){.fund-metrics{grid-template-columns:repeat(2,1fr)}}
+        .fund-metric{background:rgba(0,0,0,.2);border-radius:4px;padding:8px;display:flex;flex-direction:column;align-items:center}
+        .fund-metric .metric-label{font-size:.5rem;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+        .fund-metric .metric-val{font-size:.85rem;font-weight:600;color:var(--green);font-family:'JetBrains Mono',monospace}
+        
         .critique-section{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:15px;margin-bottom:15px}
         .critique-section h4{font-size:.8rem;color:var(--amber);margin-bottom:12px}
         .critique-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
@@ -191,21 +202,69 @@
         <div class="ctrl"><label>Automation Speed</label><div class="range-row"><input type="range" id="autoSpeed" min="1" max="10" value="5"><span class="range-val" id="autoSpeedVal">5x</span></div></div>
         <div class="ctrl"><label>UBI ($/yr)</label><div class="range-row"><input type="range" id="ubi" min="0" max="36000" step="3000" value="0"><span class="range-val" id="ubiVal">$0</span></div></div>
         <div class="ctrl"><label>Reskilling %</label><div class="range-row"><input type="range" id="reskill" min="0" max="5" step="0.5" value="0.5"><span class="range-val" id="reskillVal">0.5%</span></div></div>
-        <div class="ctrl"><label>Worker Ownership</label><div class="range-row"><input type="range" id="workerOwn" min="0" max="50" step="5" value="5"><span class="range-val" id="workerOwnVal">5%</span></div></div>
         <div class="ctrl"><label>Robot Tax</label><div class="range-row"><input type="range" id="robotTax" min="0" max="30" step="5" value="0"><span class="range-val" id="robotTaxVal">0%</span></div></div>
+        <div class="ctrl"><label>→ Fund Rate</label><div class="range-row"><input type="range" id="fundRate" min="0" max="100" step="10" value="50"><span class="range-val" id="fundRateVal">50%</span></div></div>
         <div class="ctrl"><label>Unemp Cap</label><select id="unempCap"><option value="25">25%</option><option value="35">35%</option><option value="50">50%</option></select></div>
         <div class="ctrl"><label>Speed</label><select id="speed"><option value="1000">1s/yr</option><option value="500">0.5s</option><option value="200">0.2s</option></select></div>
         <div class="ctrl btns"><button class="btn btn-p" id="startBtn">▶ Start</button><button class="btn btn-s" id="pauseBtn">⏸</button><button class="btn btn-s" id="resetBtn">↺</button></div>
     </div>
     <div class="year-box"><div class="year" id="year">2026</div><div class="year-lbl">Simulation Year</div></div>
     
-    <!-- Capital Ownership Metrics - NEW -->
+    <!-- Sovereign AI Fund Panel -->
+    <div class="fund-panel">
+        <div class="fund-header">
+            <span class="fund-icon">🏦</span>
+            <span class="fund-title">Sovereign AI Fund</span>
+            <span class="fund-subtitle">Robot Tax → Citizen Ownership Transition</span>
+        </div>
+        <div class="fund-flow">
+            <div class="flow-step">
+                <div class="flow-label">Robot Tax Revenue</div>
+                <div class="flow-val" id="taxRevenue">$0.0T/yr</div>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+                <div class="flow-label">To AI Fund (<span id="fundRateDisplay">50%</span>)</div>
+                <div class="flow-val" id="toFund">$0.0T/yr</div>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step">
+                <div class="flow-label">Fund Buys AI Equity</div>
+                <div class="flow-val" id="fundAssets">$0.0T total</div>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step highlight">
+                <div class="flow-label">Citizen Ownership</div>
+                <div class="flow-val" id="citizenOwnership">0.0%</div>
+            </div>
+        </div>
+        <div class="fund-metrics">
+            <div class="fund-metric">
+                <span class="metric-label">Dividend per Citizen</span>
+                <span class="metric-val" id="citizenDividend">$0/yr</span>
+            </div>
+            <div class="fund-metric">
+                <span class="metric-label">UBI Portion (to cash)</span>
+                <span class="metric-val" id="ubiPortion">$0.0T/yr</span>
+            </div>
+            <div class="fund-metric">
+                <span class="metric-label">Autonomous Solvency</span>
+                <span class="metric-val" id="autoSolvency">0%</span>
+            </div>
+            <div class="fund-metric">
+                <span class="metric-label">Years to 50% Ownership</span>
+                <span class="metric-val" id="yearsTo50">∞</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Capital Ownership Metrics -->
     <div class="ownership-metrics">
         <div class="own-card">
             <h5><span class="icon">🏛️</span> Capital Ownership Model</h5>
             <div class="own-grid">
                 <div class="own-item">
-                    <div class="own-label">Worker Ownership</div>
+                    <div class="own-label">Citizen Ownership</div>
                     <div class="own-val" id="ownershipRate">5%</div>
                     <div class="own-desc">Share of AI capital owned by workers/public</div>
                 </div>
@@ -686,7 +745,7 @@
         </div>
     </div>
 
-    <footer>Agentic Economy Simulator • Prof. Alp Ustundag</footer>
+    <footer>Agentic Economy Simulator • Prof. Alp Ustundag • Istanbul Technical University</footer>
 </div>
 <script>
 class Sim{
@@ -694,22 +753,24 @@ class Sim{
         this.yr=2026;this.end=2042;this.running=false;this.intv=null;
         this.p=this.getP('baseline');
         this.sec=this.initSec();
-        // State with demand-side + capital ownership dynamics
+        // State with demand-side + sovereign fund dynamics
         this.s={
             gdp:100,gdpG:.025,prod:100,emp:160,unemp:.04,gini:.39,auto:.18,agent:.08,
             stress:.3,tech:.68,incl:.72,innov:1,resk:0,disp:0,newJ:0,
             demand:100,fiscal:0,dsGap:0,deflation:1.0,priceIdx:1.0,
             realGdp:100,taxDrag:0,ubiCost:0,
-            // Capital Ownership variables
-            capGains:0,workerDiv:0,autoSolv:0,
+            // Sovereign AI Fund variables
+            capGains:0,citizenOwn:0,fundAssets:0,citizenDiv:0,autoSolv:0,
+            robotTaxRev:0,toFund:0,toUBI:0,
             // Global Competition variables
-            worldAuto:.20,compGap:0,expPenalty:0,robotTaxRev:0
+            worldAuto:.20,compGap:0,expPenalty:0
         };
-        this.h={yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],autoSolv:[0]};
+        this.h={yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],citizenOwn:[0],autoSolv:[0]};
         this.ev=[];
         this.pop=330; // US population in millions
         this.baseGdp=28; // Trillion USD base
         this.avgWage=60000; // Average annual wage
+        this.totalAIMarketCap = 15; // Trillion USD - total AI/automation market cap
         this.initCharts();this.bindEvents();this.updateUI();
     }
     initSec(){return[
@@ -738,37 +799,48 @@ class Sim{
         var ubi=+document.getElementById('ubi').value;
         var rsk=+document.getElementById('reskill').value/100;
         var unempCap=+document.getElementById('unempCap').value/100;
-        var workerOwn=+document.getElementById('workerOwn').value/100;
         var robotTax=+document.getElementById('robotTax').value/100;
+        var fundRate=+document.getElementById('fundRate').value/100; // % of robot tax to fund
         
-        // === CAPITAL OWNERSHIP: Calculate automation profits ===
+        // === SOVEREIGN AI FUND MECHANISM ===
         var gdpT = (this.s.gdp / 100) * this.baseGdp;
-        var automationProfits = gdpT * this.s.auto * 0.3; // 30% of GDP×automation goes to capital
-        this.s.capGains = automationProfits;
         
-        // Dividend income per capita from worker ownership
-        var workerDividends = automationProfits * workerOwn * 1000000 / this.pop; // $/person/year
-        this.s.dividend = workerDividends;
+        // AI market cap grows with automation
+        var aiMarketCap = this.totalAIMarketCap * (1 + this.s.auto * 2); // Market cap grows with automation
+        
+        // Automation generates capital gains (profits)
+        var automationProfits = gdpT * this.s.auto * 0.3; // 30% of GDP×automation = capital returns
+        this.s.capGains = automationProfits;
         
         // Robot tax revenue
         this.s.robotTaxRev = automationProfits * robotTax;
         
-        // Autonomous Solvency: % who can survive on passive income alone
-        var povertyLine = 15000; // $15k/year poverty line
-        var passiveIncome = workerDividends + (this.s.robotTaxRev * 1000000 / this.pop);
-        this.s.solvency = Math.min(100, (passiveIncome / povertyLine) * 100);
+        // Split robot tax: Fund vs UBI
+        this.s.toFund = this.s.robotTaxRev * fundRate; // Goes to buy AI equity
+        this.s.toUBI = this.s.robotTaxRev * (1 - fundRate); // Goes to direct cash transfers
+        
+        // Fund accumulates assets (buys AI equity each year)
+        this.s.fundAssets += this.s.toFund;
+        
+        // Citizen ownership = Fund assets / Total AI market cap
+        this.s.citizenOwn = Math.min(0.6, this.s.fundAssets / aiMarketCap); // Cap at 60%
+        
+        // Dividend income from citizen-owned AI capital
+        var citizenDividends = automationProfits * this.s.citizenOwn * 1000000 / this.pop; // $/person/year
+        this.s.citizenDiv = citizenDividends;
         
         // === GLOBAL COMPETITION ===
         this.s.worldAuto = 0.20 + (this.yr - 2026) * 0.03; // World grows 3%/year from 20%
         this.s.compGap = (this.s.auto - this.s.worldAuto) * 100;
-        this.s.expPenalty = this.s.compGap < -10 ? Math.abs(this.s.compGap + 10) * 0.01 : 0; // Penalty if >10% behind
+        this.s.expPenalty = this.s.compGap < -10 ? Math.abs(this.s.compGap + 10) * 0.01 : 0;
         
-        // === UBI + Robot Tax combined fiscal calculation ===
-        var ubiCostT = (ubi * this.pop) / 1000000; // Trillion USD
-        var netUbiCost = Math.max(0, ubiCostT - this.s.robotTaxRev); // Robot tax offsets UBI cost
-        this.s.fiscal = Math.min(0.4, netUbiCost / gdpT);
-        this.s.ubiCost = ubiCostT;
-        this.s.taxDrag = (this.s.fiscal + robotTax * 0.5) * 0.3; // Robot tax also creates some drag
+        // === FISCAL CALCULATION ===
+        var ubiCostT = (ubi * this.pop) / 1000000; // Trillion USD from government UBI
+        var totalUBI = ubiCostT + this.s.toUBI; // Government UBI + Robot tax UBI portion
+        var netFiscalCost = Math.max(0, ubiCostT - this.s.toUBI); // Robot tax UBI offsets gov UBI
+        this.s.fiscal = Math.min(0.4, netFiscalCost / gdpT);
+        this.s.ubiCost = totalUBI;
+        this.s.taxDrag = (this.s.fiscal + robotTax * 0.3) * 0.3;
         
         var tD=0,tN=0,tP=0,tE=0;
         var self=this;
@@ -795,12 +867,12 @@ class Sim{
         this.s.priceIdx = Math.max(0.5, this.s.priceIdx * (1 - 0.02 * this.s.auto));
         this.s.deflation = 1 / this.s.priceIdx;
         
-        // === Aggregate Demand with Capital Income ===
+        // === Aggregate Demand with Sovereign Fund Dividends ===
         var wageIncome = tE * this.avgWage / 1000000; // Trillion
-        var ubiIncome = ubiCostT;
-        var dividendIncome = (this.s.dividend * this.pop) / 1000000; // Trillion from worker ownership
-        var robotTaxTransfers = this.s.robotTaxRev; // Redistributed to population
-        var totalDemand = (wageIncome + ubiIncome + dividendIncome + robotTaxTransfers) * this.s.deflation;
+        var govUbiIncome = ubiCostT; // Government UBI
+        var robotTaxUBI = this.s.toUBI; // Robot tax portion going to direct cash
+        var dividendIncome = (this.s.citizenDiv * this.pop) / 1000000; // Trillion from citizen ownership
+        var totalDemand = (wageIncome + govUbiIncome + robotTaxUBI + dividendIncome) * this.s.deflation;
         var supplyCapacity = gdpT * (pI / 100);
         this.s.demand = (totalDemand / supplyCapacity) * 100;
         this.s.dsGap = ((totalDemand - supplyCapacity) / supplyCapacity) * 100;
@@ -823,64 +895,27 @@ class Sim{
         this.s.newJ += tN;
         
         // Reskilling with realistic efficiency
-        var reskillEff = p.re; // Scenario-dependent (8%-35%)
+        var reskillEff = p.re;
         var re = Math.min(this.s.disp * 0.1, tD * rsk * reskillEff * 10);
         this.s.resk += re;
         
-        // === CAPITAL OWNERSHIP MODEL ===
-        var workerOwn = +document.getElementById('workerOwn').value / 100;
-        var robotTax = +document.getElementById('robotTax').value / 100;
-        
-        // Capital gains = automation profits (productivity gain * GDP share)
-        var autoProfit = (this.s.prod - 100) / 100 * gdpT * 0.4; // 40% of productivity gain goes to capital
-        this.s.capGains = autoProfit;
-        
-        // Worker dividend = capital gains * ownership rate
-        var workerDividend = autoProfit * workerOwn;
-        this.s.workerDiv = (workerDividend * 1000000) / this.pop; // Per capita in $
-        
-        // Robot tax revenue
-        this.s.robotTaxRev = autoProfit * robotTax;
-        
-        // Autonomous Solvency = % of population that can survive on passive income alone
-        var livingWage = 25000; // Minimum to survive per year
-        var passiveIncome = this.s.workerDiv + (this.s.robotTaxRev * 1000000 / this.pop);
+        // === AUTONOMOUS SOLVENCY ===
+        // Can citizens survive on passive income (dividends + robot tax UBI) alone?
+        var livingWage = 25000;
+        var passiveIncome = this.s.citizenDiv + (this.s.toUBI * 1000000 / this.pop);
         this.s.autoSolv = Math.min(100, (passiveIncome / livingWage) * 100);
         
-        // === GLOBAL COMPETITION ===
-        // World automation grows at 3% per year from base 20%
-        this.s.worldAuto = Math.min(0.75, 0.20 * Math.pow(1.03, this.yr - 2026));
-        
-        // Competitiveness gap
-        this.s.compGap = (this.s.auto - this.s.worldAuto) * 100;
-        
-        // Export penalty if falling behind (affects GDP)
-        if (this.s.auto < this.s.worldAuto) {
-            this.s.expPenalty = Math.min(0.15, (this.s.worldAuto - this.s.auto) * 0.5);
-            this.s.gdpG -= this.s.expPenalty * 0.3; // GDP drag
-        } else {
-            this.s.expPenalty = 0;
-        }
-        
-        // === ENHANCED DEMAND with Capital Income ===
-        var dividendIncome = workerDividend; // Trillion
-        var robotTaxIncome = this.s.robotTaxRev; // Goes to social programs
-        totalDemand = (wageIncome + ubiIncome + dividendIncome + robotTaxIncome) * this.s.deflation;
-        this.s.demand = (totalDemand / supplyCapacity) * 100;
-        this.s.dsGap = ((totalDemand - supplyCapacity) / supplyCapacity) * 100;
-        
         // === Configurable unemployment cap ===
-        var unempCap = +document.getElementById('unempCap').value / 100;
         this.s.unemp = Math.max(0.02, Math.min(unempCap, (165 - tE - this.s.resk * 0.5) / 165));
         
-        // Gini with capital ownership effect (more ownership = less inequality)
+        // Gini with citizen ownership effect (more ownership = less inequality)
         this.s.gini = Math.max(0.25, Math.min(0.55, 
             0.39 + this.s.auto * 0.15 - (ubi/36000) * 0.08 - rsk * 0.05 
-            + this.s.fiscal * 0.05 - workerOwn * 0.2 - robotTax * 0.1
+            + this.s.fiscal * 0.05 - this.s.citizenOwn * 0.25 - robotTax * 0.08
         ));
         
-        // Social Stress - reduced by capital ownership (people feel they benefit from automation)
-        var ownershipRelief = workerOwn * 0.3 + (this.s.autoSolv / 100) * 0.2;
+        // Social Stress - reduced by citizen ownership (people feel they benefit from automation)
+        var ownershipRelief = this.s.citizenOwn * 0.4 + (this.s.autoSolv / 100) * 0.25;
         var changeStress = (this.s.auto > 0.4 && this.s.auto < 0.7) ? 0.15 : 0;
         var fiscalStress = this.s.fiscal * 0.5;
         this.s.stress = Math.max(0.1, Math.min(0.95, 
@@ -890,7 +925,7 @@ class Sim{
         
         this.s.tech = Math.min(0.95, this.s.tech + 0.02 * (1 - this.s.stress));
         this.s.incl = Math.max(0.3, Math.min(0.95, 
-            0.72 - (this.s.gini - 0.39) * 0.5 + rsk * 0.3 + (ubi/36000) * 0.15
+            0.72 - (this.s.gini - 0.39) * 0.5 + rsk * 0.3 + (ubi/36000) * 0.15 + this.s.citizenOwn * 0.2
         ));
         this.s.innov = Math.min(3, 1 + this.s.auto * 1.5 + (this.s.tech - 0.5) * 0.5);
         this.s.auto = this.sec.reduce(function(a,s){return a+s.a}, 0) / this.sec.length;
@@ -906,6 +941,7 @@ class Sim{
         this.h.stress.push(this.s.stress);
         this.h.demand.push(this.s.demand);
         this.h.fiscal.push(this.s.fiscal * 100);
+        this.h.citizenOwn.push(this.s.citizenOwn * 100);
         this.h.autoSolv.push(this.s.autoSolv);
         this.updateUI();
         this.updateCharts();
@@ -941,9 +977,13 @@ class Sim{
         if(this.s.gdpG<0&&this.h.gdp.length>1) this.ev.unshift({y:this.yr,t:'neg',x:'📊 GDP contraction - recession'});
         
         // Capital ownership events
+        var pown = this.h.citizenOwn[this.h.citizenOwn.length-1]||0;
         if(this.s.autoSolv>25&&psolv<=25) this.ev.unshift({y:this.yr,t:'pos',x:'🏛️ 25% can live on passive income'});
         if(this.s.autoSolv>50&&psolv<=50) this.ev.unshift({y:this.yr,t:'pos',x:'🎯 Majority autonomous solvency!'});
-        if(this.s.workerDiv>10000) this.ev.unshift({y:this.yr,t:'pos',x:'💰 Dividend income >$10K/person'});
+        if(this.s.citizenOwn*100>10&&pown<=10) this.ev.unshift({y:this.yr,t:'pos',x:'📈 Sovereign Fund: 10% citizen ownership'});
+        if(this.s.citizenOwn*100>25&&pown<=25) this.ev.unshift({y:this.yr,t:'pos',x:'🏦 Sovereign Fund: 25% citizen ownership'});
+        if(this.s.citizenOwn*100>50&&pown<=50) this.ev.unshift({y:this.yr,t:'pos',x:'🎉 Milestone: Majority citizen-owned AI!'});
+        if(this.s.citizenDiv>10000) this.ev.unshift({y:this.yr,t:'pos',x:'💰 Dividend income >$10K/person'});
         
         // Global competition events
         if(this.s.compGap<-10) this.ev.unshift({y:this.yr,t:'neg',x:'🌍 Falling behind: -10% vs world'});
@@ -957,20 +997,47 @@ class Sim{
         document.getElementById('year').textContent = this.yr;
         var st = this.s;
         
-        // Capital Ownership metrics
-        var workerOwn = +document.getElementById('workerOwn').value;
-        document.getElementById('ownershipRate').textContent = workerOwn + '%';
-        document.getElementById('ownershipRate').style.color = workerOwn > 20 ? 'var(--green)' : 'var(--muted)';
+        // === SOVEREIGN AI FUND PANEL ===
+        var fundRate = +document.getElementById('fundRate').value;
+        document.getElementById('fundRateDisplay').textContent = fundRate + '%';
         
-        document.getElementById('capitalGains').textContent = '$' + st.capGains.toFixed(1) + 'T';
-        document.getElementById('capitalGains').style.color = 'var(--amber)';
+        document.getElementById('taxRevenue').textContent = '$' + st.robotTaxRev.toFixed(2) + 'T/yr';
+        document.getElementById('taxRevenue').style.color = st.robotTaxRev > 0.5 ? 'var(--green)' : 'var(--muted)';
         
-        document.getElementById('dividendIncome').textContent = '$' + Math.round(st.workerDiv).toLocaleString() + '/yr';
-        document.getElementById('dividendIncome').style.color = st.workerDiv > 5000 ? 'var(--green)' : 'var(--cyan)';
+        document.getElementById('toFund').textContent = '$' + st.toFund.toFixed(2) + 'T/yr';
+        document.getElementById('toFund').style.color = 'var(--cyan)';
+        
+        document.getElementById('fundAssets').textContent = '$' + st.fundAssets.toFixed(1) + 'T total';
+        document.getElementById('fundAssets').style.color = st.fundAssets > 5 ? 'var(--green)' : 'var(--cyan)';
+        
+        var ownColor = st.citizenOwn > 0.3 ? 'green' : st.citizenOwn > 0.1 ? 'cyan' : 'muted';
+        document.getElementById('citizenOwnership').textContent = (st.citizenOwn * 100).toFixed(1) + '%';
+        document.getElementById('citizenOwnership').style.color = 'var(--' + ownColor + ')';
+        
+        document.getElementById('citizenDividend').textContent = '$' + Math.round(st.citizenDiv).toLocaleString() + '/yr';
+        document.getElementById('citizenDividend').style.color = st.citizenDiv > 5000 ? 'var(--green)' : 'var(--cyan)';
+        
+        document.getElementById('ubiPortion').textContent = '$' + st.toUBI.toFixed(2) + 'T/yr';
         
         var solvColor = st.autoSolv > 50 ? 'green' : st.autoSolv > 25 ? 'cyan' : 'muted';
         document.getElementById('autoSolvency').textContent = st.autoSolv.toFixed(0) + '%';
         document.getElementById('autoSolvency').style.color = 'var(--' + solvColor + ')';
+        
+        // Calculate years to 50% ownership
+        var yearsTo50 = st.citizenOwn >= 0.5 ? '✓' : 
+            (st.toFund > 0 ? Math.ceil((0.5 - st.citizenOwn) * this.totalAIMarketCap * (1 + st.auto * 2) / st.toFund) : '∞');
+        document.getElementById('yearsTo50').textContent = yearsTo50;
+        document.getElementById('yearsTo50').style.color = yearsTo50 === '✓' ? 'var(--green)' : yearsTo50 < 10 ? 'var(--cyan)' : 'var(--muted)';
+        
+        // === CAPITAL OWNERSHIP METRICS ===
+        document.getElementById('ownershipRate').textContent = (st.citizenOwn * 100).toFixed(1) + '%';
+        document.getElementById('ownershipRate').style.color = st.citizenOwn > 0.2 ? 'var(--green)' : 'var(--muted)';
+        
+        document.getElementById('capitalGains').textContent = '$' + st.capGains.toFixed(1) + 'T';
+        document.getElementById('capitalGains').style.color = 'var(--amber)';
+        
+        document.getElementById('dividendIncome').textContent = '$' + Math.round(st.citizenDiv).toLocaleString() + '/yr';
+        document.getElementById('dividendIncome').style.color = st.citizenDiv > 5000 ? 'var(--green)' : 'var(--cyan)';
         
         // Global Competition metrics
         document.getElementById('worldAuto').textContent = (st.worldAuto * 100).toFixed(0) + '%';
@@ -1107,10 +1174,12 @@ class Sim{
             stress:.3,tech:.68,incl:.72,innov:1,resk:0,disp:0,newJ:0,
             demand:100,fiscal:0,dsGap:0,deflation:1.0,priceIdx:1.0,
             realGdp:100,taxDrag:0,ubiCost:0,
-            capGains:0,workerDiv:0,autoSolv:0,
-            worldAuto:.20,compGap:0,expPenalty:0,robotTaxRev:0
+            // Sovereign Fund - starts at ZERO
+            capGains:0,citizenOwn:0,fundAssets:0,citizenDiv:0,autoSolv:0,
+            robotTaxRev:0,toFund:0,toUBI:0,
+            worldAuto:.20,compGap:0,expPenalty:0
         };
-        this.h = {yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],autoSolv:[0]};
+        this.h = {yr:[2026],gdp:[100],prod:[100],unemp:[.04],gini:[.39],auto:[.18],stress:[.3],demand:[100],fiscal:[0],citizenOwn:[0],autoSolv:[0]};
         this.ev = [];
         this.updateUI();
         this.updateCharts();
@@ -1124,11 +1193,11 @@ class Sim{
         document.getElementById('scenario').onchange = function(e){
             self.p = self.getP(e.target.value);
             var d = {
-                baseline:{sp:5,u:0,r:0.5,wo:5,rt:0},
-                accelerated:{sp:8,u:24000,r:1,wo:5,rt:0},
-                managed:{sp:5,u:18000,r:3,wo:15,rt:10},
-                resistance:{sp:3,u:0,r:0.5,wo:5,rt:20},
-                cooperative:{sp:6,u:12000,r:2,wo:35,rt:5}
+                baseline:{sp:5,u:0,r:0.5,rt:0,fr:50},
+                accelerated:{sp:8,u:24000,r:1,rt:5,fr:20},
+                managed:{sp:5,u:18000,r:3,rt:15,fr:60},
+                resistance:{sp:3,u:0,r:0.5,rt:25,fr:30},
+                cooperative:{sp:6,u:6000,r:2,rt:20,fr:80}
             }[e.target.value];
             document.getElementById('autoSpeed').value = d.sp;
             document.getElementById('autoSpeedVal').textContent = d.sp + 'x';
@@ -1136,16 +1205,16 @@ class Sim{
             document.getElementById('ubiVal').textContent = '$' + d.u.toLocaleString();
             document.getElementById('reskill').value = d.r;
             document.getElementById('reskillVal').textContent = d.r + '%';
-            document.getElementById('workerOwn').value = d.wo;
-            document.getElementById('workerOwnVal').textContent = d.wo + '%';
             document.getElementById('robotTax').value = d.rt;
             document.getElementById('robotTaxVal').textContent = d.rt + '%';
+            document.getElementById('fundRate').value = d.fr;
+            document.getElementById('fundRateVal').textContent = d.fr + '%';
         };
         document.getElementById('autoSpeed').oninput = function(e){document.getElementById('autoSpeedVal').textContent = e.target.value + 'x'};
         document.getElementById('ubi').oninput = function(e){document.getElementById('ubiVal').textContent = '$' + (+e.target.value).toLocaleString()};
         document.getElementById('reskill').oninput = function(e){document.getElementById('reskillVal').textContent = e.target.value + '%'};
-        document.getElementById('workerOwn').oninput = function(e){document.getElementById('workerOwnVal').textContent = e.target.value + '%'};
         document.getElementById('robotTax').oninput = function(e){document.getElementById('robotTaxVal').textContent = e.target.value + '%'};
+        document.getElementById('fundRate').oninput = function(e){document.getElementById('fundRateVal').textContent = e.target.value + '%'};
         document.getElementById('speed').onchange = function(){if(self.running){self.stop();self.start()}};
     }
 }
